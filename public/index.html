@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a3d5c">
+<title>Pool</title>
+<style>
+:root {
+  --bg:#f0f4f8; --surface:#fff; --surface2:#f8fafc;
+  --text:#0f172a; --text2:#475569; --text3:#94a3b8;
+  --border:rgba(0,0,0,0.08);
+  --blue:#0077cc; --blue-lt:#dbeeff;
+  --green:#059669; --green-lt:#d1fae5;
+  --orange:#d97706; --orange-lt:#fef3c7;
+  --red:#dc2626; --red-lt:#fee2e2;
+  --nav:calc(60px + env(safe-area-inset-bottom,0px));
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+button{border:none;cursor:pointer;font-family:inherit;}
+
+/* NAV */
+.app{display:flex;flex-direction:column;height:100dvh;}
+.header{background:#0a3d5c;color:#fff;height:54px;display:flex;align-items:center;padding:0 16px;flex-shrink:0;}
+.header h1{font-size:17px;font-weight:600;flex:1;}
+.header span{font-size:12px;background:rgba(255,255,255,.15);padding:3px 10px;border-radius:20px;}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(var(--nav) + 14px);}
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:var(--surface);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:50;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text3);font-size:10px;font-weight:500;padding-top:4px;}
+.ni.on{color:var(--blue);}
+.ni i{font-size:22px;line-height:1;}
+
+/* SCREENS */
+.screen{display:none;}.screen.on{display:block;}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:16px;padding:15px;margin-bottom:11px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.ct{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:11px;}
+
+/* BANNER */
+.banner{background:linear-gradient(135deg,#0a3d5c,#0077cc);border-radius:16px;padding:18px;margin-bottom:11px;color:#fff;display:flex;align-items:center;gap:14px;}
+.banner-ico{font-size:34px;line-height:1;}
+.banner-sub{font-size:12px;color:rgba(255,255,255,.65);}
+.banner-title{font-size:19px;font-weight:600;}
+.banner-date{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;}
+
+/* PARAMS GRID */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.pc{background:var(--surface);border-radius:13px;padding:13px 11px;box-shadow:0 1px 3px rgba(0,0,0,.05);position:relative;}
+.pc-name{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.pc-val{font-size:22px;font-weight:700;margin:4px 0 1px;line-height:1;}
+.pc-unit{font-size:11px;color:var(--text3);}
+.pc-range{font-size:10px;color:var(--text3);margin-top:2px;}
+.pc-dot{position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;}
+.dot-ok{background:var(--green);}.dot-warn{background:var(--orange);}.dot-bad{background:var(--red);}.dot-na{background:var(--text3);}
+.pc-st{font-size:10px;font-weight:600;margin-top:3px;}
+.pc-st.ok{color:var(--green);}.pc-st.warn{color:var(--orange);}.pc-st.bad{color:var(--red);}
+
+/* ALERTS */
+.al{border-radius:11px;padding:11px 13px;margin-bottom:8px;font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+.al.ok{background:var(--green-lt);color:#065f46;}
+.al.warn{background:var(--orange-lt);color:#78350f;}
+.al.bad{background:var(--red-lt);color:#7f1d1d;}
+
+/* FORM */
+.mtoggle{display:flex;background:var(--surface2);border-radius:10px;padding:3px;margin-bottom:18px;border:1px solid var(--border);}
+.mb{flex:1;padding:9px;border-radius:8px;background:transparent;font-size:13px;font-weight:500;color:var(--text3);}
+.mb.on{background:var(--surface);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.fl{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between;}
+.fl span{font-size:11px;color:var(--text3);font-weight:400;}
+.fi{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:12px 13px;font-size:16px;color:var(--text);outline:none;margin-bottom:13px;}
+.fi:focus{border-color:var(--blue);}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:32px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.fhint{font-size:10px;color:var(--text3);margin-top:-10px;margin-bottom:11px;}
+textarea.fi{resize:none;min-height:70px;font-size:14px;}
+.sbtn{width:100%;background:var(--blue);color:#fff;border-radius:13px;padding:15px;font-size:16px;font-weight:600;margin-top:4px;}
+.sbtn:disabled{opacity:.4;}
+
+/* HISTORY */
+.ti{background:var(--surface);border-radius:13px;padding:13px;margin-bottom:9px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.th-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.t-date{font-size:14px;font-weight:600;}
+.tbadge{font-size:11px;padding:3px 8px;border-radius:7px;font-weight:500;}
+.tbadge.ok{background:var(--green-lt);color:#065f46;}
+.tbadge.warn{background:var(--orange-lt);color:#78350f;}
+.tbadge.bad{background:var(--red-lt);color:#7f1d1d;}
+.tparams{display:flex;flex-wrap:wrap;gap:5px;}
+.tp{font-size:12px;background:var(--surface2);border-radius:6px;padding:3px 7px;color:var(--text2);}
+.tp b{color:var(--text);}
+.tnotes{font-size:12px;color:var(--text2);margin-top:7px;font-style:italic;}
+.tmode{font-size:11px;color:var(--text3);margin-top:5px;}
+.del-btn{font-size:11px;color:var(--text3);background:transparent;padding:4px 8px;border-radius:6px;border:1px solid var(--border);margin-top:8px;}
+.empty{text-align:center;padding:50px 20px;color:var(--text3);}
+.empty-ico{font-size:44px;margin-bottom:11px;}
+
+/* CALC */
+.ctabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.ctab{padding:7px 13px;border-radius:18px;font-size:13px;font-weight:500;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);}
+.ctab.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.cp{display:none;}.cp.on{display:block;}
+.rp{background:var(--blue-lt);color:var(--blue);border-radius:11px;padding:14px;text-align:center;margin-top:11px;}
+.rb{font-size:30px;font-weight:700;}
+.rl{font-size:13px;color:#3b82f6;margin-top:3px;}
+.rrow{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+.rrow label{font-size:13px;color:var(--text2);min-width:125px;}
+.rrow input{flex:1;}
+.rval{font-size:13px;font-weight:600;min-width:48px;text-align:right;}
+.tip{background:var(--blue-lt);border-radius:9px;padding:10px 11px;font-size:12px;color:#1e40af;margin-top:9px;}
+.warn-box{background:var(--orange-lt);border-radius:9px;padding:10px 11px;font-size:12px;color:#78350f;margin-top:9px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:11px 18px;border-radius:18px;font-size:14px;font-weight:500;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+
+.sh{font-size:17px;font-weight:700;margin-bottom:13px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <h1 id="htitle">Pool</h1>
+  <span>13 m³</span>
+</div>
+
+<div class="content">
+
+  <div class="screen on" id="s-home">
+    <div id="banner"></div>
+    <div id="pgrid"></div>
+    <div id="alerts"></div>
+  </div>
+
+  <div class="screen" id="s-saisie">
+    <div class="sh">Nouveau test</div>
+    <div class="mtoggle">
+      <button class="mb on" id="btn-b" onclick="setMode('b')">🧪 Bandelettes</button>
+      <button class="mb" id="btn-t" onclick="setMode('t')">🔬 Testeur précis</button>
+    </div>
+    <div id="fwrap"></div>
+  </div>
+
+  <div class="screen" id="s-histo">
+    <div class="sh">Historique</div>
+    <div id="hlist"></div>
+  </div>
+
+  <div class="screen" id="s-calc">
+    <div class="sh">Calculateur</div>
+    <div class="ctabs">
+      <button class="ctab on" onclick="sc('dosage',this)">Dosages</button>
+      <button class="ctab" onclick="sc('pac',this)">⏱ PAC</button>
+    </div>
+    <div class="cp on" id="cp-dosage">
+      <div class="card">
+        <div class="ct">Quel produit corriger ?</div>
+        <div class="fl">Paramètre</div>
+        <select class="fi" id="dp" onchange="cd()">
+          <option value="ph_up">pH trop bas → pH+</option>
+          <option value="ph_down">pH trop haut → pH−</option>
+          <option value="chlore">Chlore insuffisant → Choc</option>
+          <option value="tac">TAC trop bas → Bicarbonate</option>
+        </select>
+        <div class="fl">Valeur actuelle <span id="dunit"></span></div>
+        <input class="fi" type="number" id="dcur" step="0.1" placeholder="—" oninput="cd()">
+        <div id="dres"></div>
+        <div class="tip" style="margin-top:11px;">Toujours diluer dans un seau avant de verser. Attendre 30 min entre deux corrections.</div>
+      </div>
+    </div>
+    <div class="cp" id="cp-pac">
+      <div class="card">
+        <div class="ct">Temps de chauffe — PAC 3,1 kW</div>
+        <div class="rrow"><label>Température départ</label><input type="range" min="8" max="28" value="13" step="1" id="ps" oninput="cp()"><span class="rval" id="psv">13 °C</span></div>
+        <div class="rrow"><label>Température cible</label><input type="range" min="15" max="30" value="26" step="1" id="pe" oninput="cp()"><span class="rval" id="pev">26 °C</span></div>
+        <div class="rrow"><label>Bâche fermée</label><input type="range" min="0" max="1" value="1" step="1" id="pb" oninput="cp()"><span class="rval" id="pbv">Oui</span></div>
+        <div id="pres"></div>
+        <div class="warn-box">Ne pas démarrer sous 10 °C extérieur. Filtration en marche pendant la chauffe.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <div class="ni on" id="ni-home" onclick="go('home')"><i>🏠</i>Accueil</div>
+  <div class="ni" id="ni-saisie" onclick="go('saisie')"><i>➕</i>Test</div>
+  <div class="ni" id="ni-histo" onclick="go('histo')"><i>📊</i>Historique</div>
+  <div class="ni" id="ni-calc" onclick="go('calc')"><i>🧮</i>Calcul</div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const V = 13;
+const TITLES = {home:'Pool',saisie:'Nouveau test',histo:'Historique',calc:'Calculateur'};
+const PARAMS = {
+  ph:           {l:'pH',           u:'',      d:1, ok:[7.2,7.4], w:[7.0,7.6]},
+  chlore_libre: {l:'Chlore libre', u:'mg/L',  d:1, ok:[1.0,3.0], w:[0.5,5.0]},
+  tac:          {l:'TAC',          u:'mg/L',  d:0, ok:[80,120],  w:[60,180]},
+  th:           {l:'TH',           u:'mg/L',  d:0, ok:[150,300], w:[100,400]},
+  cya:          {l:'Stabilisant',  u:'mg/L',  d:0, ok:[30,50],   w:[10,75]},
+  temp_eau:     {l:'Temp. eau',    u:'°C',    d:1, ok:[24,28],   w:[20,30]}
+};
+const BANDS = {
+  ph:           [6.2,6.8,7.0,7.2,7.4,7.6,8.0,8.4],
+  chlore_libre: [0,0.5,1,2,3,5,10],
+  tac:          [0,40,80,120,160,200,250],
+  th:           [0,50,100,150,200,300,500],
+  cya:          [0,30,50,75,100,150,200],
+  temp_eau:     null
+};
+
+/* STORAGE */
+function load() { try { return JSON.parse(localStorage.getItem('pool_tests')||'[]'); } catch(e){return[];} }
+function save(d) { localStorage.setItem('pool_tests', JSON.stringify(d)); }
+
+/* NAV */
+function go(id) {
+  ['home','saisie','histo','calc'].forEach(s => {
+    document.getElementById('s-'+s).classList.toggle('on',s===id);
+    document.getElementById('ni-'+s).classList.toggle('on',s===id);
+  });
+  document.getElementById('htitle').textContent = TITLES[id];
+  if(id==='home') renderHome();
+  if(id==='histo') renderHisto();
+}
+
+/* STATUS */
+function pst(k,v) {
+  if(v===null||v===undefined||v==='') return 'na';
+  const p=PARAMS[k]; v=parseFloat(v);
+  if(v>=p.ok[0]&&v<=p.ok[1]) return 'ok';
+  if(v>=p.w[0]&&v<=p.w[1]) return 'warn';
+  return 'bad';
+}
+function overall(t) {
+  if(!t) return 'na';
+  let w='ok';
+  for(const k of Object.keys(PARAMS)){const s=pst(k,t[k]);if(s==='bad')return 'bad';if(s==='warn')w='warn';}
+  return w;
+}
+
+/* HOME */
+function renderHome() {
+  const tests = load();
+  const last = tests.length ? tests[tests.length-1] : null;
+  // Banner
+  const st=overall(last);
+  const ico={ok:'✅',warn:'⚠️',bad:'🚨',na:'💧'}[st];
+  const msg={ok:'Eau équilibrée',warn:'Ajustements à faire',bad:'Corrections urgentes',na:'Aucun test enregistré'}[st];
+  const dt=last?'Dernier test : '+fd(last.date):'Ajoutez votre premier test';
+  document.getElementById('banner').innerHTML=`<div class="banner"><div class="banner-ico">${ico}</div><div><div class="banner-sub">Statut bassin</div><div class="banner-title">${msg}</div><div class="banner-date">${dt}</div></div></div>`;
+  // Grid
+  const lbls={ok:'OK',warn:'Attention',bad:'Corriger',na:'—'};
+  let g='<div class="pgrid">';
+  for(const [k,p] of Object.entries(PARAMS)){
+    const v=last?last[k]:null;
+    const s=pst(k,v);
+    const dv=(v!==null&&v!==undefined&&v!=='')?(+v).toFixed(p.d):'—';
+    g+=`<div class="pc"><div class="pc-dot dot-${s}"></div><div class="pc-name">${p.l}</div><div class="pc-val">${dv}<span class="pc-unit"> ${p.u}</span></div><div class="pc-range">Cible ${p.ok[0]}–${p.ok[1]}${p.u?' '+p.u:''}</div><div class="pc-st ${s}">${lbls[s]}</div></div>`;
+  }
+  g+='</div>';
+  document.getElementById('pgrid').innerHTML='<p class="ct" style="margin-bottom:9px;margin-top:4px;">Paramètres actuels</p>'+g;
+  // Alerts
+  if(!last){document.getElementById('alerts').innerHTML='';return;}
+  const TIPS={
+    ph:{up:'pH trop bas → Ajouter pH+ (carbonate de sodium)',down:'pH trop haut → Ajouter pH− (bisulfate de sodium)'},
+    chlore_libre:{up:'Chlore insuffisant → Choc chlore recommandé',down:'Chlore élevé → Ne plus ajouter de galets, attendre'},
+    tac:{up:'TAC trop bas → pH instable → Ajouter bicarbonate de sodium',down:'TAC élevé → Difficile à corriger, surveiller'},
+    th:{up:'TH trop bas → Eau agressive pour le liner',down:'TH élevé → Risque de tartre'},
+    cya:{up:'Stabilisant faible → Chlore se dégrade trop vite au soleil',down:'⚠️ Stabilisant trop élevé → Chlore bloqué ! Vidanger 25–30 % du bassin'},
+    temp_eau:{up:'Eau fraîche → Lancer la PAC',down:'Eau > 30 °C → Chlore dégradé 2× plus vite, surveiller de près'}
+  };
+  let al='<p class="ct" style="margin-bottom:9px;margin-top:4px;">Recommandations</p>'; let any=false;
+  for(const [k,p] of Object.entries(PARAMS)){
+    const v=last[k]; if(v===null||v===undefined||v==='') continue;
+    const s=pst(k,v); if(s==='ok') continue;
+    const dir=parseFloat(v)<p.ok[0]?'up':'down';
+    const m=TIPS[k]?TIPS[k][dir]:'';
+    if(!m) continue;
+    any=true;
+    al+=`<div class="al ${s}"><span style="font-size:15px;">${s==='bad'?'🚨':'⚠️'}</span><div>${m}</div></div>`;
+  }
+  if(!any) al+=`<div class="al ok"><span>✅</span><div>Tous les paramètres sont dans les normes. Prochain test dans 2–3 jours.</div></div>`;
+  document.getElementById('alerts').innerHTML=al;
+}
+
+/* FORM */
+let mode='b';
+function setMode(m){
+  mode=m;
+  document.getElementById('btn-b').classList.toggle('on',m==='b');
+  document.getElementById('btn-t').classList.toggle('on',m==='t');
+  buildForm();
+}
+function buildForm(){
+  const today=new Date().toISOString().split('T')[0];
+  let h=`<div class="fl">Date</div><input class="fi" type="date" id="fd" value="${today}">`;
+  for(const [k,p] of Object.entries(PARAMS)){
+    const bands=BANDS[k];
+    let inp;
+    if(mode==='b'&&bands){
+      const o=bands.map(v=>`<option value="${v}">${v}${p.u?' '+p.u:''}</option>`).join('');
+      inp=`<select class="fi" id="f-${k}"><option value="">—</option>${o}</select>`;
+    } else {
+      inp=`<input class="fi" type="number" id="f-${k}" step="${p.d?0.1:1}" placeholder="ex. ${p.ok[0]}">`;
+    }
+    h+=`<div class="fl">${p.l} <span>${p.u||'—'}</span></div>${inp}<div class="fhint">Cible : ${p.ok[0]}–${p.ok[1]}${p.u?' '+p.u:''}</div>`;
+  }
+  h+=`<div class="fl">Temp. air <span>°C — facultatif</span></div><input class="fi" type="number" id="f-ta" step="1" placeholder="ex. 22">`;
+  h+=`<div class="fl">Notes</div><textarea class="fi" id="fn" placeholder="Contre-lavage, choc chlore, brossage…"></textarea>`;
+  h+=`<button class="sbtn" onclick="saveTest()">Enregistrer</button>`;
+  document.getElementById('fwrap').innerHTML=h;
+}
+
+function saveTest(){
+  const btn=document.querySelector('.sbtn');
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  const row={date:document.getElementById('fd').value, mode:mode==='b'?'bandelettes':'testeur précis', notes:document.getElementById('fn').value||''};
+  for(const k of Object.keys(PARAMS)){const v=document.getElementById('f-'+k)?.value;row[k]=(v!==''&&v!==undefined)?parseFloat(v):null;}
+  const ta=document.getElementById('f-ta')?.value;row.temp_air=ta?parseFloat(ta):null;
+  const tests=load(); tests.push(row); save(tests);
+  btn.disabled=false; btn.textContent='Enregistrer';
+  toast('✅ Test enregistré !');
+  buildForm();
+  go('home');
+}
+
+/* HISTORY */
+function renderHisto(){
+  const tests=load().slice().reverse();
+  if(!tests.length){
+    document.getElementById('hlist').innerHTML=`<div class="empty"><div class="empty-ico">🏊</div>Aucun test enregistré.<br>Ajoutez votre première mesure !</div>`;
+    return;
+  }
+  const lbls={ok:'Équilibré',warn:'Attention',bad:'Urgent',na:'Incomplet'};
+  let h='';
+  tests.forEach((t,i)=>{
+    const idx=tests.length-1-i;
+    const s=overall(t);
+    let ps='';
+    for(const [k,p] of Object.entries(PARAMS)){if(t[k]===null||t[k]===undefined) continue;ps+=`<div class="tp">${p.l} <b>${(+t[k]).toFixed(p.d)}</b></div>`;}
+    h+=`<div class="ti">
+      <div class="th-row"><div class="t-date">${fd(t.date)}</div><div class="tbadge ${s}">${lbls[s]}</div></div>
+      <div class="tparams">${ps||'<span style="font-size:12px;color:var(--text3)">Aucune valeur saisie</span>'}</div>
+      ${t.notes?`<div class="tnotes">${t.notes}</div>`:''}
+      <div class="tmode">${t.mode==='testeur précis'?'🔬 Testeur précis':'🧪 Bandelettes'}</div>
+      <button class="del-btn" onclick="delTest(${idx})">🗑 Supprimer</button>
+    </div>`;
+  });
+  document.getElementById('hlist').innerHTML=h;
+}
+
+function delTest(i){
+  if(!confirm('Supprimer ce test ?')) return;
+  const tests=load(); tests.splice(i,1); save(tests);
+  renderHisto();
+  toast('Test supprimé');
+}
+
+/* DOSAGE */
+const DC={ph_up:{u:'pH actuel',ph:'ex. 7.0'},ph_down:{u:'pH actuel',ph:'ex. 7.8'},chlore:{u:'Chlore mg/L',ph:'ex. 0.5'},tac:{u:'TAC mg/L',ph:'ex. 60'}};
+function cd(){
+  const p=document.getElementById('dp').value;
+  const v=parseFloat(document.getElementById('dcur').value);
+  const c=DC[p];
+  document.getElementById('dunit').textContent=c?'— '+c.u:'';
+  document.getElementById('dcur').placeholder=c?c.ph:'—';
+  if(!c||isNaN(v)){document.getElementById('dres').innerHTML='';return;}
+  let dose=0,prod='',note='';
+  if(p==='ph_up'){dose=Math.round(Math.max(0,7.3-v)/0.1*25*V/10);prod='pH+ (carbonate de sodium)';note='Dissoudre dans un seau, verser devant les buses de refoulement.';}
+  else if(p==='ph_down'){dose=Math.round(Math.max(0,v-7.3)/0.1*15*V/10);prod='pH− (bisulfate de sodium)';note='Verser en plusieurs points, filtration en marche.';}
+  else if(p==='chlore'){dose=Math.round(Math.max(0,2-v)*V*1000/600);prod='Chlore choc granulés (60% actif)';note='Traiter le soir, filtration en marche. Baignade après 12–24 h.';}
+  else if(p==='tac'){dose=Math.round(Math.max(0,100-v)*V/10*16);prod='Bicarbonate de sodium';note='Verser à l\'entrée du skimmer, filtration en marche.';}
+  if(dose<=0){document.getElementById('dres').innerHTML='<div class="al ok" style="margin-top:11px;"><span>✅</span><div>Paramètre déjà dans les normes.</div></div>';return;}
+  document.getElementById('dres').innerHTML=`<div class="rp"><div class="rb">${dose} g</div><div class="rl">${prod}</div></div><div class="tip">${note}</div>`;
+}
+
+/* PAC */
+function cp(){
+  const ts=+document.getElementById('ps').value,te=+document.getElementById('pe').value,b=+document.getElementById('pb').value;
+  document.getElementById('psv').textContent=ts+' °C';
+  document.getElementById('pev').textContent=te+' °C';
+  document.getElementById('pbv').textContent=b?'Oui':'Non';
+  const dt=te-ts;
+  if(dt<=0){document.getElementById('pres').innerHTML='<div class="al ok" style="margin-top:11px;"><span>✅</span><div>Température déjà atteinte.</div></div>';return;}
+  let h=Math.round(V*1000*dt*1.163/3100*10)/10;
+  if(!b) h=Math.round(h*1.4*10)/10;
+  const j=Math.floor(h/24),r=Math.round(h%24);
+  document.getElementById('pres').innerHTML=`<div class="rp"><div class="rb">${h} h</div><div class="rl">${j>0?j+' jour'+(j>1?'s':'')+' et '+r+' h':r+' h de chauffe'}${b?'':' — sans bâche'}</div></div><div class="tip">Énergie ≈ ${Math.round(V*dt*1.163)} kWh · Garder la filtration en marche.</div>`;
+}
+
+/* CALC TABS */
+function sc(id,btn){
+  document.querySelectorAll('.cp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('cp-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+/* UTILS */
+function fd(d){if(!d)return'—';const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* INIT */
+buildForm(); renderHome(); cd(); cp();
+</script>
+</body>
+</html>
