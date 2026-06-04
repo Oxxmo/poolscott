@@ -38,14 +38,15 @@ COMMON_CORPORATE_BASES = [
 ]
 
 
+# Alias used internally (must be defined before _leet)
+LEET_MAP = COMMON_LEET_MAP
+
+
 def _leet(word: str) -> str:
     result = ""
     for ch in word:
         result += LEET_MAP.get(ch.lower(), ch)
     return result
-
-# Alias used internally
-LEET_MAP = COMMON_LEET_MAP
 
 
 def _variants(word: str) -> list[str]:

@@ -216,7 +216,7 @@ def generate_targeted_wordlist(output_path: str, company: str = "", extra_words:
     Writes to output_path. Returns the path.
     """
     from wordlists import generate_corporate_wordlist
-    words = generate_corporate_wordlist(company, extra_words or [])
+    words = generate_corporate_wordlist(company_name=company, extra_words=extra_words or [])
 
     with open(output_path, "w") as fh:
         for word in words:

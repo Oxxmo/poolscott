@@ -11,8 +11,6 @@ import time
 from dataclasses import dataclass, field
 from typing import Optional
 
-from rich.console import Console
-from rich.live import Live
 from rich.table import Table
 from rich import box
 

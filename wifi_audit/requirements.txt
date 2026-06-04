@@ -1,1 +1,6 @@
+# Runtime dependencies for WiFi Security Audit Tool
+# System tools (NOT Python packages — install separately):
+#   sudo apt install aircrack-ng reaver hcxdumptool hcxtools wireless-tools iw network-manager hashcat
+
+# Python packages (install with: pip3 install -r requirements.txt)
 rich>=13.7.0

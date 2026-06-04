@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Optional
 
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn, TextColumn
-from rich.prompt import Confirm
 
 from utils import console, get_logger, run_command, SESSION
 
