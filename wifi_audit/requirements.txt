@@ -4,3 +4,4 @@
 
 # Python packages (install with: pip3 install -r requirements.txt)
 rich>=13.7.0
+flask>=3.0.0

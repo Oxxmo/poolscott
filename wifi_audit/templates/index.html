@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WiFiAudit Pro</title>
+<style>
+  :root {
+    --blue: #1e3a5f;
+    --red:  #dc2626;
+    --bg:   #f1f5f9;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── Header ── */
+  header {
+    background: var(--blue); color: white;
+    padding: 18px 32px; display: flex; align-items: center; gap: 16px;
+    border-bottom: 3px solid var(--red);
+  }
+  header h1 { font-size: 1.25rem; font-weight: 700; }
+  header .sub { font-size: .78rem; color: #94a3b8; }
+
+  /* ── Layout ── */
+  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px; }
+
+  /* ── Steps ── */
+  .steps { display: flex; gap: 0; margin-bottom: 32px; }
+  .step {
+    flex: 1; padding: 12px 8px; text-align: center;
+    background: var(--card); border: 1px solid var(--border);
+    font-size: .8rem; font-weight: 600; color: var(--muted);
+    position: relative; cursor: default;
+  }
+  .step:not(:last-child)::after {
+    content: '›'; position: absolute; right: -10px; top: 50%;
+    transform: translateY(-50%); font-size: 1.2rem; color: var(--border); z-index:1;
+  }
+  .step:first-child { border-radius: 8px 0 0 8px; }
+  .step:last-child  { border-radius: 0 8px 8px 0; }
+  .step.active   { background: var(--blue); color: white; border-color: var(--blue); }
+  .step.done     { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 28px 32px; margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .card h2 {
+    font-size: 1rem; font-weight: 700; color: var(--blue);
+    border-left: 3px solid var(--red); padding-left: 10px; margin-bottom: 20px;
+  }
+
+  /* ── Form ── */
+  label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: 4px; color: var(--muted); }
+  input, select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: .9rem; margin-bottom: 14px; background: var(--bg);
+  }
+  input:focus, select:focus { outline: 2px solid var(--blue); background: white; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-block; padding: 10px 22px; border: none; border-radius: 6px;
+    font-size: .9rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
+  }
+  .btn:hover { opacity: .88; }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-danger  { background: var(--red);  color: white; }
+  .btn-green   { background: #16a34a; color: white; }
+  .btn-gray    { background: #e2e8f0; color: var(--text); }
+
+  /* ── Disclaimer ── */
+  .disclaimer {
+    background: #fff7ed; border: 2px solid #f97316; border-radius: 8px;
+    padding: 20px 24px; margin-bottom: 24px; font-size: .88rem; line-height: 1.7;
+  }
+  .disclaimer strong { color: var(--red); }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th { background: var(--blue); color: white; padding: 9px 12px; text-align: left; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border: none; }
+  tr.clickable:hover td { background: #eff6ff; cursor: pointer; }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: .75rem; font-weight: 700; color: white;
+  }
+  .crit  { background: #dc2626; }
+  .high  { background: #ea580c; }
+  .med   { background: #d97706; }
+  .low   { background: #16a34a; }
+
+  /* ── Log console ── */
+  .log {
+    background: #0f172a; color: #a3e635; font-family: monospace; font-size: .82rem;
+    padding: 16px; border-radius: 6px; min-height: 80px; max-height: 200px;
+    overflow-y: auto; white-space: pre-wrap; margin-top: 16px;
+  }
+
+  /* ── Result banner ── */
+  .result-ok  { background:#dcfce7; border:2px solid #86efac; border-radius:8px; padding:16px 20px; margin-top:16px; }
+  .result-err { background:#fef2f2; border:2px solid #fca5a5; border-radius:8px; padding:16px 20px; margin-top:16px; }
+  .result-ok  h3 { color:#16a34a; }
+  .result-err h3 { color:#dc2626; }
+  .key-display { font-size:1.6rem; font-weight:800; color:#dc2626; font-family:monospace; margin-top:6px; }
+
+  /* ── Spinner ── */
+  .spin { display:inline-block; width:16px; height:16px; border:2px solid #fff3; border-top-color:white; border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:6px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ── Hidden ── */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>WiFiAudit Pro</h1>
+    <div class="sub">Outil d'audit de sécurité WiFi — usage professionnel autorisé uniquement</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Étapes -->
+  <div class="steps">
+    <div class="step active" id="s1">1. Autorisation</div>
+    <div class="step"        id="s2">2. Scan</div>
+    <div class="step"        id="s3">3. Capture</div>
+    <div class="step"        id="s4">4. Attaque</div>
+    <div class="step"        id="s5">5. Rapport</div>
+  </div>
+
+  <!-- ════ ÉTAPE 1 : Autorisation ════ -->
+  <div id="step1">
+    <div class="disclaimer">
+      <strong>⚠ AVERTISSEMENT LÉGAL</strong><br/>
+      Cet outil est réservé aux professionnels de la cybersécurité disposant d'une
+      <strong>autorisation écrite</strong> du propriétaire du réseau audité.<br/>
+      Toute utilisation non autorisée est illégale (Art. 323-1 du Code Pénal,
+      Loi Informatique et Libertés).
+    </div>
+
+    <div class="card">
+      <h2>Informations de la mission</h2>
+      <label>Nom du client / organisation</label>
+      <input id="auth_client" type="text" placeholder="Acme Corporation"/>
+
+      <label>Périmètre audité</label>
+      <input id="auth_scope" type="text" placeholder="Réseau WiFi siège social Paris"/>
+
+      <div class="row">
+        <div>
+          <label>Nom de l'auditeur</label>
+          <input id="auth_tester" type="text" placeholder="Jean Dupont"/>
+        </div>
+        <div>
+          <label>Date d'autorisation</label>
+          <input id="auth_date" type="date"/>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <input type="checkbox" id="auth_confirm" style="width:auto;margin-right:8px"/>
+        <label for="auth_confirm" style="display:inline;font-size:.9rem">
+          Je certifie disposer d'une autorisation écrite pour réaliser cet audit.
+        </label>
+      </div>
+
+      <button class="btn btn-primary" onclick="goToScan()">Confirmer et continuer →</button>
+    </div>
+  </div>
+
+  <!-- ════ ÉTAPE 2 : Scan ════ -->
+  <div id="step2" class="hidden">
+    <div class="card">
+      <h2>Scanner les réseaux WiFi</h2>
+
+      <label>Interface réseau</label>
+      <select id="scan_iface"></select>
+
+      <button class="btn btn-primary" onclick="startScan()" id="btn_scan">
+        Lancer le scan
+      </button>
+
+      <div class="log hidden" id="scan_log"></div>
+
+      <div id="networks_table" class="hidden" style="margin-top:20px">
+        <p style="margin-bottom:10px;color:var(--muted);font-size:.85rem">
+          Cliquez sur un réseau pour le sélectionner comme cible.
+        </p>
+        <table>
+          <tr><th>SSID</th><th>BSSID</th><th>Canal</th><th>Signal</th><th>Sécurité</th><th>Risque</th></tr>
+          <tbody id="networks_body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ÉTAPE 3 : Capture ════ -->
+  <div id="step3" class="hidden">
+    <div class="card">
+      <h2>Capture du handshake WPA</h2>
+
+      <div class="row">
+        <div>
+          <label>SSID cible</label>
+          <input id="cap_ssid" type="text" readonly/>
+        </div>
+        <div>
+          <label>BSSID cible</label>
+          <input id="cap_bssid" type="text" readonly style="font-family:monospace"/>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Canal</label>
+          <input id="cap_channel" type="number"/>
+        </div>
+        <div>
+          <label>Interface</label>
+          <input id="cap_iface" type="text" readonly/>
+        </div>
+      </div>
+      <label>Timeout (secondes)</label>
+      <input id="cap_timeout" type="number" value="90" style="width:120px"/>
+
+      <br/>
+      <button class="btn btn-danger" onclick="startCapture()" id="btn_cap">
+        Capturer le handshake
+      </button>
+
+      <div class="log hidden" id="cap_log"></div>
+      <div id="cap_result"></div>
+    </div>
+  </div>
+
+  <!-- ════ ÉTAPE 4 : Attaque dictionnaire ════ -->
+  <div id="step4" class="hidden">
+    <div class="card">
+      <h2>Attaque par dictionnaire</h2>
+
+      <label>Nom de l'entreprise (pour la wordlist ciblée)</label>
+      <input id="crack_company" type="text" placeholder="Acme Corporation"/>
+
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px">
+        L'outil génère automatiquement une liste de mots de passe courants
+        basée sur le nom de l'entreprise, les années en cours, et les patterns corporate typiques.
+      </p>
+
+      <button class="btn btn-danger" onclick="startCrack()" id="btn_crack">
+        Lancer l'attaque
+      </button>
+
+      <div class="log hidden" id="crack_log"></div>
+      <div id="crack_result"></div>
+    </div>
+  </div>
+
+  <!-- ════ ÉTAPE 5 : Rapport ════ -->
+  <div id="step5" class="hidden">
+    <div class="card">
+      <h2>Générer le rapport d'audit</h2>
+
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:20px">
+        Le rapport compile tous les résultats de la session :
+        réseaux détectés, niveaux de risque, mots de passe récupérés et recommandations.
+      </p>
+
+      <label>Client</label>
+      <input id="rep_client" type="text"/>
+      <label>Auditeur</label>
+      <input id="rep_tester" type="text"/>
+      <label>Périmètre</label>
+      <input id="rep_scope" type="text"/>
+
+      <button class="btn btn-green" onclick="generateReport()" id="btn_report">
+        Générer et télécharger le rapport HTML
+      </button>
+      <div id="report_result" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── État global ──────────────────────────────────────────────────────────
+let STATE = { iface: "wlan0", target: null, capFile: null };
+
+// ── Init ─────────────────────────────────────────────────────────────────
+window.onload = async () => {
+  document.getElementById("auth_date").value = new Date().toISOString().split("T")[0];
+  const ifaces = await fetch("/api/interfaces").then(r => r.json()).catch(() => []);
+  const sel = document.getElementById("scan_iface");
+  (ifaces.length ? ifaces : ["wlan0"]).forEach(i => {
+    const o = document.createElement("option"); o.value = o.text = i; sel.add(o);
+  });
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+function show(id)  { document.getElementById(id).classList.remove("hidden"); }
+function hide(id)  { document.getElementById(id).classList.add("hidden"); }
+function setStep(n) {
+  for (let i=1;i<=5;i++) {
+    const el = document.getElementById("s"+i);
+    el.classList.remove("active","done");
+    if (i < n)  el.classList.add("done");
+    if (i === n) el.classList.add("active");
+  }
+}
+
+function appendLog(id, line) {
+  const el = document.getElementById(id);
+  show(id);
+  el.textContent += line + "\n";
+  el.scrollTop = el.scrollHeight;
+}
+
+async function pollJob(jobId, logId, onDone) {
+  while (true) {
+    const j = await fetch(`/api/job/${jobId}`).then(r => r.json());
+    const el = document.getElementById(logId);
+    el.textContent = j.output.join("\n");
+    el.scrollTop = el.scrollHeight;
+    if (j.status === "done")  { onDone(j.result); break; }
+    if (j.status === "error") { onDone(null);     break; }
+    await new Promise(r => setTimeout(r, 1500));
+  }
+}
+
+function badgeClass(risk) {
+  return {CRITIQUE:"crit", ÉLEVÉ:"high", MOYEN:"med", FAIBLE:"low"}[risk] || "med";
+}
+
+// ── Étape 1 : Autorisation ───────────────────────────────────────────────
+function goToScan() {
+  if (!document.getElementById("auth_confirm").checked) {
+    alert("Vous devez confirmer l'autorisation avant de continuer."); return;
+  }
+  if (!document.getElementById("auth_client").value.trim()) {
+    alert("Veuillez saisir le nom du client."); return;
+  }
+  hide("step1"); show("step2"); setStep(2);
+  // Pré-remplir le rapport
+  document.getElementById("rep_client").value = document.getElementById("auth_client").value;
+  document.getElementById("rep_tester").value = document.getElementById("auth_tester").value;
+  document.getElementById("rep_scope").value  = document.getElementById("auth_scope").value;
+}
+
+// ── Étape 2 : Scan ───────────────────────────────────────────────────────
+async function startScan() {
+  const iface = document.getElementById("scan_iface").value;
+  STATE.iface = iface;
+  const btn = document.getElementById("btn_scan");
+  btn.innerHTML = '<span class="spin"></span>Scan en cours...';
+  btn.disabled = true;
+  show("scan_log");
+  document.getElementById("scan_log").textContent = "";
+  hide("networks_table");
+
+  const { job_id } = await fetch("/api/scan", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ interface: iface }),
+  }).then(r => r.json());
+
+  await pollJob(job_id, "scan_log", (networks) => {
+    btn.innerHTML = "Relancer le scan"; btn.disabled = false;
+    if (!networks || !networks.length) return;
+    const tbody = document.getElementById("networks_body");
+    tbody.innerHTML = "";
+    networks.forEach(n => {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      tr.innerHTML = `<td><b>${n.ssid}</b></td>
+        <td style="font-family:monospace;font-size:.82em">${n.bssid}</td>
+        <td>${n.channel}</td>
+        <td>${n.signal}%</td>
+        <td>${n.encryption||'OPEN'}</td>
+        <td><span class="badge ${badgeClass(n.risk)}">${n.risk}</span></td>`;
+      tr.onclick = () => selectTarget(n);
+      tbody.appendChild(tr);
+    });
+    show("networks_table");
+  });
+}
+
+function selectTarget(n) {
+  STATE.target = n;
+  document.getElementById("cap_ssid").value    = n.ssid;
+  document.getElementById("cap_bssid").value   = n.bssid;
+  document.getElementById("cap_channel").value = n.channel;
+  document.getElementById("cap_iface").value   = STATE.iface;
+  document.getElementById("crack_company").value = document.getElementById("auth_client").value;
+  hide("step2"); show("step3"); setStep(3);
+}
+
+// ── Étape 3 : Capture ────────────────────────────────────────────────────
+async function startCapture() {
+  const btn = document.getElementById("btn_cap");
+  btn.innerHTML = '<span class="spin"></span>Capture en cours...';
+  btn.disabled = true;
+  show("cap_log");
+  document.getElementById("cap_log").textContent = "";
+  document.getElementById("cap_result").innerHTML = "";
+
+  const { job_id } = await fetch("/api/capture", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      interface: STATE.iface,
+      bssid:    document.getElementById("cap_bssid").value,
+      channel:  document.getElementById("cap_channel").value,
+      ssid:     document.getElementById("cap_ssid").value,
+      timeout:  document.getElementById("cap_timeout").value,
+    }),
+  }).then(r => r.json());
+
+  await pollJob(job_id, "cap_log", (result) => {
+    btn.innerHTML = "Relancer la capture"; btn.disabled = false;
+    const div = document.getElementById("cap_result");
+    if (result && result.cap_file) {
+      STATE.capFile = result.cap_file;
+      div.innerHTML = `<div class="result-ok">
+        <h3>✓ Handshake capturé</h3>
+        <p style="font-family:monospace;font-size:.82rem;margin-top:4px">${result.cap_file}</p>
+        <button class="btn btn-danger" style="margin-top:12px" onclick="goToCrack()">
+          Passer à l'attaque →
+        </button>
+      </div>`;
+    } else {
+      div.innerHTML = `<div class="result-err">
+        <h3>✗ Capture échouée</h3>
+        <p>Assurez-vous qu'un client est connecté au réseau cible, puis réessayez.</p>
+      </div>`;
+    }
+  });
+}
+
+function goToCrack() { hide("step3"); show("step4"); setStep(4); }
+
+// ── Étape 4 : Crack ──────────────────────────────────────────────────────
+async function startCrack() {
+  const btn = document.getElementById("btn_crack");
+  btn.innerHTML = '<span class="spin"></span>Attaque en cours...';
+  btn.disabled = true;
+  show("crack_log");
+  document.getElementById("crack_log").textContent = "";
+  document.getElementById("crack_result").innerHTML = "";
+
+  const { job_id } = await fetch("/api/crack", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      cap_file: STATE.capFile,
+      bssid:    STATE.target ? STATE.target.bssid : "",
+      company:  document.getElementById("crack_company").value,
+    }),
+  }).then(r => r.json());
+
+  await pollJob(job_id, "crack_log", (result) => {
+    btn.innerHTML = "Relancer l'attaque"; btn.disabled = false;
+    const div = document.getElementById("crack_result");
+    if (result && result.key) {
+      div.innerHTML = `<div class="result-ok">
+        <h3>✓ Mot de passe WiFi récupéré</h3>
+        <div class="key-display">${result.key}</div>
+        <p style="margin-top:8px;color:var(--muted);font-size:.85rem">
+          Ce mot de passe est dans une liste de mots courants — il est insuffisant pour un environnement professionnel.
+        </p>
+        <button class="btn btn-green" style="margin-top:12px" onclick="goToReport()">
+          Générer le rapport →
+        </button>
+      </div>`;
+    } else {
+      div.innerHTML = `<div class="result-err">
+        <h3>Clé non trouvée dans la wordlist ciblée</h3>
+        <p>Le mot de passe n'est pas dans les patterns courants — bon signe, mais l'audit reste utile.</p>
+        <button class="btn btn-green" style="margin-top:12px" onclick="goToReport()">
+          Générer le rapport quand même →
+        </button>
+      </div>`;
+    }
+  });
+}
+
+function goToReport() { hide("step4"); show("step5"); setStep(5); }
+
+// ── Étape 5 : Rapport ────────────────────────────────────────────────────
+async function generateReport() {
+  const btn = document.getElementById("btn_report");
+  btn.innerHTML = '<span class="spin"></span>Génération...';
+  btn.disabled = true;
+
+  const { filename } = await fetch("/api/report", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      client: document.getElementById("rep_client").value,
+      tester: document.getElementById("rep_tester").value,
+      scope:  document.getElementById("rep_scope").value,
+    }),
+  }).then(r => r.json());
+
+  btn.innerHTML = "Re-générer le rapport"; btn.disabled = false;
+
+  document.getElementById("report_result").innerHTML = `
+    <div class="result-ok">
+      <h3>✓ Rapport généré : ${filename}</h3>
+      <a href="/api/download_report" class="btn btn-green" style="margin-top:12px;text-decoration:none">
+        ⬇ Télécharger le rapport
+      </a>
+    </div>`;
+}
+</script>
+</body>
+</html>
