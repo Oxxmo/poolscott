@@ -250,6 +250,17 @@ textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
 .empty .ei{font-size:38px;margin-bottom:8px;}
 .hr{height:1px;background:var(--border);margin:18px 0;border:none;}
 .install-tip{font-size:12px;color:var(--text2);background:var(--brand-lt);border-radius:12px;padding:11px 13px;margin-top:14px;display:flex;gap:9px;align-items:flex-start;}
+
+/* AUTOUR DE MOI */
+.reco-place{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+.reco-place:last-child{border-bottom:none;}
+.reco-main{flex:1;min-width:0;}
+.reco-main b{font-size:14.5px;font-weight:600;display:block;}
+.reco-main small{font-size:12.5px;color:var(--text2);display:block;margin-top:2px;}
+.reco-tag{display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent-tx);background:var(--accent-lt);padding:2px 8px;border-radius:7px;margin-top:6px;letter-spacing:.02em;}
+.reco-go{flex-shrink:0;background:var(--brand);color:var(--on-brand);border-radius:20px;padding:8px 13px;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+.reco-go:active{opacity:.8;}
+.area-here{display:inline-block;font-size:10px;font-weight:700;color:var(--good);margin-left:6px;}
 </style>
 </head>
 <body>
@@ -374,6 +385,19 @@ textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
       <div id="healthTips"></div>
     </section>
 
+    <!-- ============ AUTOUR DE MOI ============ -->
+    <section class="screen" id="s-autour">
+      <div class="sh">Autour de moi</div>
+      <div class="sh-sub">Où tu es, quoi faire. Choisis ta zone (ou 📍 ta position) et une envie — le bouton « Y aller » ouvre l'itinéraire dans Google Maps.</div>
+      <button class="btn" id="geoBtn" onclick="detectArea()" style="margin-bottom:9px">📍 Utiliser ma position</button>
+      <div id="geoStatus" class="muted" style="text-align:center;margin-bottom:14px;min-height:16px"></div>
+      <div class="fl">Ta zone</div>
+      <div class="pills" id="areaPills"></div>
+      <div class="pills" id="catPills"></div>
+      <div id="recoList"></div>
+      <div class="callout" style="margin-top:14px">Adresses choisies à la main — à Bali les horaires et l'ouverture <b>bougent vite</b>, vérifie avant de te déplacer. Une envie précise ou une zone absente ? <b>Demande-moi dans le chat</b> et j'ajoute.</div>
+    </section>
+
   </div>
 
   <nav class="nav">
@@ -385,6 +409,8 @@ textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
       <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Argent</button>
     <button class="ni" id="ni-guide" onclick="go('guide')">
       <svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>Guide</button>
+    <button class="ni" id="ni-autour" onclick="go('autour')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z"/></svg>Autour</button>
     <button class="ni" id="ni-sos" onclick="go('sos')">
       <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><path d="M12 8v4M12 15h.01"/></svg>SOS</button>
   </nav>
@@ -400,73 +426,74 @@ const TRIP = { start:'2026-08-06', end:'2026-08-17', name:'Bali' };
 const DEFAULT_RATE = 20700;
 
 const ITIN = [
-  {t:'Arrivée à Bali', z:'Aéroport DPS · Sud', acts:[
+  {t:'Arrivée & route vers Ubud', z:'Aéroport DPS → Ubud', acts:[
     'Atterrissage à Ngurah Rai (DPS) — file e-VOA si déjà fait en ligne',
-    'Transfert vers l\'hébergement (Grab/Gojek ou transfert pré-réservé, pas les rabatteurs)',
-    'Achat carte eSIM / SIM Telkomsel à l\'aéroport si pas fait',
-    'Repos, premier repas léger, on s\'acclimate au décalage (+7h l\'été)'
-  ], tip:'Retire un peu de cash (BCA/Mandiri) dès l\'aéroport et garde le reçu du visa.'},
-  {t:'Réveil en douceur', z:'Canggu · Seminyak', acts:[
-    'Grasse matinée pour récupérer du vol et du décalage (+7h l\'été)',
-    'Petit-déj dans un café de Canggu, première baignade tranquille',
-    'Balade à pied ou à scooter dans les rizières et ruelles de Canggu',
-    'Coucher de soleil sur la plage, dîner léger — on prend le rythme balinais'
-  ], tip:'Journée tampon idéale : hydrate-toi bien et ménage-toi, l\'acclimatation compte.'},
-  {t:'Canggu & côte sud-ouest', z:'Canggu · Seminyak', acts:[
-    'Matinée plage / cours de surf débutant à Batu Bolong ou Echo Beach',
-    'Cafés brunch de Canggu (la capitale du digital nomad)',
-    'Coucher de soleil à Tanah Lot (temple sur son rocher) ou en beach club',
-    'Balade dans les rizières de Canggu au calme'
-  ], tip:'Tanah Lot est bondé au coucher du soleil — arrive 1h avant pour la lumière.'},
-  {t:'Péninsule de Bukit', z:'Uluwatu', acts:[
-    'Temple d\'Uluwatu perché sur la falaise (attention aux singes voleurs !)',
-    'Plages de rêve : Padang Padang, Bingin, Suluban',
-    'Danse Kecak au coucher du soleil au temple (spectacle de feu et chants)',
-    'Dîner poisson grillé les pieds dans le sable à Jimbaran'
-  ], tip:'Le Kecak d\'Uluwatu se remplit vite : arrive tôt pour une place face au soleil.'},
-  {t:'Cap sur Ubud', z:'Route → Ubud', acts:[
-    'Route vers les terres (≈1h30–2h avec le trafic) — loue un chauffeur à la journée',
-    'Arrêt plantation de café & dégustation (goûte le luwak si curieux)',
-    'Installation à Ubud, cœur culturel de Bali',
-    'Campuhan Ridge Walk en fin de journée (crête verte, gratuit)'
-  ], tip:'Un chauffeur privé à la journée (~600–800k Rp) rend les excursions bien plus simples.'},
-  {t:'Ubud culture & rizières', z:'Ubud', acts:[
-    'Rizières en terrasses de Tegalalang au lever du jour (avant la foule)',
+    'Cash (BCA/Mandiri) + eSIM/SIM Telkomsel à l\'aéroport',
+    'Transfert vers Ubud (≈1h30–2h de route) — chauffeur pré-réservé conseillé',
+    'Check-in, dîner tranquille, on récupère du vol'
+  ], tip:'Décalage +7h l\'été : ménage-toi ce soir, tu attaques le Batur dans 2 jours.'},
+  {t:'Ubud, cœur culturel', z:'Ubud', acts:[
+    'Rizières en terrasses de Tegalalang tôt le matin (avant la foule)',
     'Marché d\'Ubud + Palais royal (Puri Saren)',
     'Sacred Monkey Forest (garde lunettes et affaires près de toi)',
-    'Cours de cuisine balinaise ou séance de yoga l\'après-midi'
-  ], tip:'À Tegalalang, les « balançoires » et points photo sont payants — négocie le pack.'},
-  {t:'Temples d\'eau & cascades', z:'Centre / Est', acts:[
-    'Tirta Empul : temple de purification (rituel melukat, apporte un sarong)',
-    'Cascade Tegenungan, Tibumana ou Kanto Lampo',
-    'Point de vue sur le volcan Batur & lac depuis Kintamani (déjeuner vue)',
-    'Café Luwak / villages d\'artisans sur la route'
-  ], tip:'Pour le melukat à Tirta Empul, prévois un change et respecte l\'ordre des fontaines.'},
-  {t:'Est sauvage ou Batur', z:'Lempuyang / Sidemen', acts:[
-    'Option A : lever de soleil au sommet du Mont Batur (trek 2h, guide requis)',
-    'Option B : Lempuyang « Gates of Heaven » + palais d\'eau Tirta Gangga',
-    'Rizières préservées et villages tisserands de Sidemen',
-    'Fin de journée détente / massage balinais'
-  ], tip:'Le trek du Batur part vers 3h30 du matin — couche-toi tôt la veille et prends une laine.'},
-  {t:'Nusa Penida', z:'Île · excursion', acts:[
-    'Départ tôt en speedboat depuis Sanur (≈45 min de traversée)',
-    'Kelingking Beach (la falaise en forme de T-Rex), Broken Beach, Angel\'s Billabong',
-    'Snorkeling avec les raies manta à Manta Point (selon la mer)',
-    'Retour en fin d\'après-midi — journée intense mais inoubliable'
-  ], tip:'Mer parfois agitée : anti-nausée conseillé. Réserve un tour avec chauffeur sur l\'île.'},
-  {t:'Détente côte sud', z:'Seminyak / Sanur', acts:[
-    'Grasse matinée méritée — spa, piscine, plage',
-    'Beach club (Seminyak / Canggu) pour le coucher de soleil',
-    'Shopping : boutiques de créateurs, marché de Seminyak',
-    'Bon restaurant pour se faire plaisir le soir'
-  ], tip:'Dans les beach clubs, un minimum de consommation remplace souvent l\'entrée.'},
-  {t:'Derniers instants', z:'Au choix', acts:[
-    'Dernière plage ou activité manquée (surf, plongée à Amed…)',
+    'Campuhan Ridge Walk ou cours de cuisine / yoga',
+    'Couche-toi tôt : réveil nocturne demain pour le Batur !'
+  ], tip:'Onglet « Autour de moi » → Ubud pour mes adresses resto, café et yoga.'},
+  {t:'Lever de soleil au Mont Batur', z:'Kintamani → Ubud', acts:[
+    'Pick-up vers 2h–2h30 du matin depuis Ubud (guide obligatoire)',
+    'Trek ≈2h jusqu\'au sommet (1717 m) pour le lever de soleil sur le volcan',
+    'Petit-déj œufs cuits à la vapeur du cratère, vue sur le lac Batur',
+    'Retour à Ubud en milieu de matinée → repos / spa / piscine l\'après-midi'
+  ], tip:'Prends une petite laine (frais au sommet), une frontale et de bonnes chaussures. Hydrate-toi.'},
+  {t:'Ubud → Nusa Lembongan', z:'Ubud → Sanur → Lembongan', acts:[
+    'Matinée tranquille à Ubud puis transfert vers le port de Sanur',
+    'Fast boat pour Nusa Lembongan (≈30–45 min de traversée)',
+    'Installation, puis coucher de soleil à Devil\'s Tear (vagues spectaculaires)',
+    'Premier dîner les pieds dans le sable à Mushroom Bay'
+  ], tip:'Fast boats surtout le matin. Anti-nausée si mer agitée + attention aux limites de bagages.'},
+  {t:'Nusa Lembongan & Ceningan', z:'Nusa Lembongan', acts:[
+    'Snorkeling : Manta Point, Crystal Bay ou Mangrove (tour en bateau)',
+    'Pont jaune vers Nusa Ceningan → Blue Lagoon & Mahana Point',
+    'Dream Beach & Sandy Bay pour bronzer',
+    'Sunset à Ohana\'s ou au Sandy Bay Beach Club'
+  ], tip:'Crème solaire reef-safe pour le snorkeling. Loue un scooter pour l\'île (routes cabossées).'},
+  {t:'Retour sur Bali — nouvelle base', z:'Lembongan → à définir', acts:[
+    'Dernière baignade à Mushroom Bay le matin',
+    'Fast boat retour vers Sanur',
+    'Cap sur ta prochaine base (Canggu, Seminyak, Uluwatu, Sanur…)',
+    'Pose-toi, repère le quartier via « Autour de moi »'
+  ], tip:'Pas encore décidé où loger après ? Demande-moi, je te conseille selon ton envie (surf, food, calme, fête).'},
+  {t:'Journée libre — le sud', z:'Uluwatu / Bukit', acts:[
+    'Idée : temple d\'Uluwatu + danse Kecak au coucher du soleil',
+    'Plages de falaise : Padang Padang, Bingin, Melasti',
+    'Poisson grillé à Jimbaran le soir',
+    'Ou tout autre chose — rien n\'est figé !'
+  ], tip:'Ouvre « Autour de moi » pour des adresses selon ta position du jour.'},
+  {t:'Journée libre — surf & cafés', z:'Canggu / Seminyak', acts:[
+    'Idée : cours de surf à Batu Bolong ou Echo Beach',
+    'Brunch dans un café de Canggu, séance de sport',
+    'Beach club au coucher du soleil (La Brisa, Potato Head…)',
+    'À adapter selon ton humeur'
+  ], tip:'« Autour de moi » → Canggu ou Seminyak pour manger, boire et bouger.'},
+  {t:'Journée libre — détente', z:'À ton rythme', acts:[
+    'Spa balinais, piscine, plage — journée off méritée',
+    'Ou plongée/snorkeling à Amed, à l\'est',
+    'Ou rizières de Jatiluwih / Sidemen au calme',
+    'Écoute-toi'
+  ], tip:'Demande-moi une idée précise selon où tu es et l\'envie du moment.'},
+  {t:'Journée libre — exploration', z:'Au choix', acts:[
+    'Un coin pas encore vu : est sauvage, nord et ses lacs, ou temples',
+    'Activité forte : rafting, ATV, plongée, cours de cuisine',
+    'Ou re-plage dans ton spot préféré',
+    'Flexible à 100 %'
+  ], tip:'« Autour de moi » + moi dans le chat = ton duo pour improviser malin.'},
+  {t:'Derniers instants & souvenirs', z:'À définir', acts:[
     'Achats souvenirs : café, épices, textiles, artisanat en bois',
-    'Massage / repas mémorable',
+    'Retour dans ton spot ou resto préféré',
+    'Massage / dernier coucher de soleil',
     'On prépare les valises tranquillement'
-  ], tip:'Garde de la place et du cash pour les souvenirs — et pense à la taxe de sortie éventuelle.'},
-  {t:'Départ · Fête de l\'Indépendance 🇮🇩', z:'Aéroport DPS', acts:[
+  ], tip:'Garde du cash pour les souvenirs et rapproche-toi de l\'aéroport la veille du départ.'},
+  {t:'Départ · Fête de l\'Indépendance 🇮🇩', z:'→ Aéroport DPS', acts:[
     '17 août = Hari Kemerdekaan : drapeaux rouge & blanc, défilés partout',
     'Check-out et transfert aéroport — prévois de la marge (trafic + festivités)',
     'Dépense ou reconvertis tes derniers rupiah avant l\'embarquement',
@@ -651,6 +678,69 @@ const PRICES = [
 ];
 
 /* ============================================================
+   AUTOUR DE MOI — zones, catégories, adresses réelles
+   ============================================================ */
+const RECO_CATS=[['manger','🍽️','Manger'],['boire','🍹','Boire'],['cafe','☕','Café'],['sport','🏋️','Sport / Gym'],['faire','🏄','Faire'],['spa','💆','Spa']];
+const RECO_AREAS=[
+  {id:'ubud',n:'Ubud',lat:-8.5069,lng:115.2625},
+  {id:'lembongan',n:'Nusa Lembongan',lat:-8.6800,lng:115.4500},
+  {id:'canggu',n:'Canggu',lat:-8.6478,lng:115.1385},
+  {id:'seminyak',n:'Seminyak',lat:-8.6900,lng:115.1680},
+  {id:'uluwatu',n:'Uluwatu / Bukit',lat:-8.8290,lng:115.0880},
+  {id:'sanur',n:'Sanur',lat:-8.6870,lng:115.2620}
+];
+const RECO={
+  ubud:{
+    manger:[['Warung Babi Guling Ibu Oka','Le cochon de lait balinais le plus célèbre d\'Ubud','€ · iconique'],['Nasi Ayam Kedewatan Ibu Mangku','Poulet-riz épicé, institution locale','€ · local'],['Warung Biah Biah','Petits plats indonésiens généreux et conviviaux','€ · warung'],['Clear Cafe','Sain, végé-friendly, déco magique','€€ · healthy'],['Nusantara by Locavore','Cuisine indonésienne raffinée','€€€ · gastro']],
+    boire:[['Room4Dessert','Bar à desserts-cocktails de Will Goldfarb, une expérience','€€€ · unique'],['No Más Ubud','Cocktails créatifs, belle ambiance','€€'],['CP Lounge','Bar animé, musique live et tard le soir','€€ · fête'],['Laughing Buddha Bar','Live music et tapas au centre','€€']],
+    cafe:[['Seniman Coffee Studio','Torréfacteur de référence, café pointu','☕ · specialty'],['Suka Espresso','Brunch et café branché','☕ · brunch'],['Anomali Coffee','Café indonésien, valeur sûre','☕'],['F.R.E.A.K Coffee','Petit spot cosy, bon flat white','☕']],
+    sport:[['The Yoga Barn','Le temple du yoga à Ubud, tous niveaux','🧘 · iconique'],['Radiantly Alive','Studio de yoga réputé, cours variés','🧘'],['Ubud Fitness Center','Salle muscu/cardio complète','🏋️ · gym'],['Taksu Yoga & Spa','Yoga dans un cadre nature','🧘💆']],
+    faire:[['Sacred Monkey Forest','Sanctuaire de singes et temples mousseux','🌳 · nature'],['Campuhan Ridge Walk','Balade gratuite sur une crête verte','🚶 · gratuit'],['Tegalalang Rice Terrace','Rizières en terrasses emblématiques','🌾'],['Tegenungan Waterfall','Cascade accessible près d\'Ubud','💦'],['Ubud Palace & Saraswati','Cœur historique + danses le soir','⛩️']],
+    spa:[['Karsa Spa','Massage face aux rizières, adresse culte','💆 · nature'],['Taksu Spa','Cabines dans la jungle, haut de gamme','💆 · €€€'],['Fivelements','Bien-être holistique au bord de la rivière','💆 · €€€']]
+  },
+  lembongan:{
+    manger:[['The Deck Cafe & Bar','Vue mer, poisson frais et cocktails','€€ · vue'],['Warung Bambu','Cuisine indonésienne authentique','€ · local'],['Ginger & Jamu','Bowls, jus et sain, ambiance cosy','€€ · healthy'],['Muntigs','Spot chill face à l\'océan','€€']],
+    boire:[['Ohana\'s Beach Bar','Sunset et balançoires sur la plage','€€ · sunset'],['Sandy Bay Beach Club','Club de plage, coucher de soleil','€€'],['The Beach Shack','Bar décontracté pieds dans le sable','€€']],
+    cafe:[['Bali Eco Deli','Café, healthy food et wifi','☕'],['Nusa Lembongan Coffee','Bon café insulaire','☕']],
+    sport:[['Yoga Shack Lembongan','Cours de yoga face à l\'océan','🧘'],['Serenity Yoga','Sessions dans un cadre paisible','🧘']],
+    faire:[['Devil\'s Tear','Falaises où l\'océan explose, sunset','🌊 · gratuit'],['Manta Point (snorkeling)','Nager avec les raies manta','🤿 · tour'],['Blue Lagoon (Ceningan)','Lagon turquoise via le pont jaune','🏝️'],['Dream Beach','Plage sauvage et photogénique','🏖️'],['Mangrove Forest','Tour en barque dans la mangrove','🚣']],
+    spa:[['Lembongan Spa','Massage balinais pour récupérer','💆']]
+  },
+  canggu:{
+    manger:[['The Shady Shack','Végé/healthy très populaire face aux rizières','€€ · végé'],['Warung Dandelion','Buffet indonésien frais et copieux','€ · warung'],['Warung Bu Mi','Nasi campur local, bon marché','€ · local'],['Mason','Restaurant à feu de bois, tendance','€€€'],['Ji at Tugu (Batu Bolong)','Cadre romantique en bord de plage','€€€']],
+    boire:[['La Brisa','Beach club bohème, sunset iconique','€€€ · sunset'],['Old Man\'s','Bar de plage animé à Batu Bolong','€€ · fête'],['The Lawn','Sunset les pieds dans l\'herbe','€€'],['Pretty Poison','Bar autour d\'un bowl de skate','€€']],
+    cafe:[['Crate Cafe','Le brunch culte de Canggu','☕ · brunch'],['Nüde','Healthy et instagrammable','☕'],['Machinery Cafe','Belle déco, bon café','☕'],['Copenhagen Canggu','Café-cowork agréable','☕ · cowork']],
+    sport:[['Body Factory Bali','Grande salle muscu / cross training','🏋️ · gym'],['Nirvana Strength','Muscu et haltéro sérieux','🏋️'],['The Practice','Studio de yoga de référence','🧘'],['S2S / Samadi','Yoga et wellness à Batu Bolong','🧘']],
+    faire:[['Batu Bolong Beach','Surf débutant et sunset','🏄'],['Echo Beach','Spot de surf plus costaud, bars','🏄'],['Rizières de Canggu (Shortcut)','Balade verte entre les cafés','🌾'],['Tanah Lot','Temple sur l\'océan, sunset (30 min)','⛩️']],
+    spa:[['Amo Spa','Spa design et soins complets','💆 · €€'],['Cozy Spa','Massages pas chers et efficaces','💆 · €']]
+  },
+  seminyak:{
+    manger:[['Warung Eny','Petit warung chaleureux, cuisine maison','€ · local'],['Sarong','Cuisine asiatique raffinée, dîner chic','€€€'],['Merah Putih','Indonésien moderne, cadre superbe','€€€'],['La Favela','Déco jungle, festif le soir','€€€ · fête'],['Motel Mexicola','Tacos et margaritas, ambiance colorée','€€']],
+    boire:[['Potato Head Beach Club','Beach club iconique face au sunset','€€€ · sunset'],['Ku De Ta','Institution sunset de Seminyak','€€€'],['La Plancha','Transats colorés sur la plage','€€ · sunset'],['Woobar (W Bali)','Cocktails design en bord de mer','€€€']],
+    cafe:[['Revolver Espresso','Café pointu dans une ruelle cachée','☕'],['Sisterfields','Brunch australien réputé','☕ · brunch'],['Corner House','Belle terrasse, brunch','☕']],
+    sport:[['Nakama Fitness','Salle complète muscu/cardio','🏋️ · gym'],['Body By Nature','Cross training et cours','🏋️'],['Yoga studios (Seminyak)','Plusieurs studios de yoga','🧘']],
+    faire:[['Seminyak Beach','Grande plage à sunset, surf','🏖️'],['Petitenget','Temple + zone chic de restos','⛩️'],['Shopping Kayu Aya','Boutiques de créateurs','🛍️']],
+    spa:[['Prana Spa','Spa somptueux façon palais indien','💆 · €€€'],['Bodyworks','Massages réputés, bon rapport','💆 · €€']]
+  },
+  uluwatu:{
+    manger:[['Single Fin','Cliff bar-resto, vue surf légendaire','€€ · vue'],['The Cashew Tree','Healthy et concerts, à Bingin','€€'],['Om Burger','Les meilleurs burgers du Bukit','€€'],['Warung Local','Cuisine indonésienne pas chère','€ · local']],
+    boire:[['Single Fin (dimanche)','Le sunset du dimanche mythique','€€ · sunset'],['El Kabron','Bar-piscine espagnol sur la falaise','€€€ · sunset'],['Sundays Beach Club','Plage privée, feu de camp le soir','€€€'],['Ulu Cliffhouse','Rooftop-club face à l\'océan','€€€']],
+    cafe:[['Drifter Cafe','Café-boutique surf, healthy','☕'],['Suka Espresso Uluwatu','Bon brunch et café','☕ · brunch']],
+    sport:[['Uluwatu Yoga studios','Cours de yoga face à l\'océan','🧘'],['Morning Light Yoga','Sessions au lever du jour','🧘']],
+    faire:[['Temple d\'Uluwatu + Kecak','Temple de falaise + danse au sunset','⛩️ · incontournable'],['Padang Padang Beach','Petite plage iconique','🏖️'],['Bingin Beach','Plage de surfeurs, ambiance cool','🏄'],['Melasti Beach','Sable blanc et falaises','🏖️']],
+    spa:[['Karma Spa','Spa avec vue, haut de gamme','💆 · €€€']]
+  },
+  sanur:{
+    manger:[['Warung Mak Beng','Soupe de poisson culte depuis 1941','€ · iconique'],['Char Char (bord de mer)','Poisson grillé face à la plage','€€'],['Three Monkeys Sanur','Cadre agréable, cuisine variée','€€']],
+    boire:[['Bars du boardwalk','Terrasses face à la plage','€€'],['Genius Cafe','Beach café pour l\'apéro et le sunrise','€€']],
+    cafe:[['Genius Cafe','Café-cowork les pieds dans le sable','☕ · cowork'],['Soul in a Bowl','Bowls et brunch healthy','☕']],
+    sport:[['Nfinity Fitness','Salle de sport locale','🏋️ · gym'],['Power of Now Oasis','Yoga sur la plage','🧘']],
+    faire:[['Sanur Beach Boardwalk','Balade/vélo, lever de soleil','🌅 · gratuit'],['Port de Sanur','Départ des bateaux vers les Nusa','⛴️']],
+    spa:[['Jamu Spa','Massages traditionnels','💆']]
+  }
+};
+
+/* ============================================================
    STOCKAGE
    ============================================================ */
 const DB = {
@@ -661,7 +751,7 @@ const DB = {
 /* ============================================================
    NAVIGATION
    ============================================================ */
-const SCREENS=['home','plan','money','guide','sos'];
+const SCREENS=['home','plan','money','guide','autour','sos'];
 function go(id){
   SCREENS.forEach(s=>{
     document.getElementById('s-'+s).classList.toggle('on',s===id);
@@ -671,6 +761,7 @@ function go(id){
   window.scrollTo(0,0);
   if(id==='home') renderHome();
   if(id==='money') renderBudget();
+  if(id==='autour') renderReco();
 }
 
 /* ============================================================
@@ -728,8 +819,8 @@ function renderHome(){
     <button class="q" onclick="go('plan')"><span class="qi">🗓️</span>Itinéraire</button>
     <button class="q" onclick="openGuide('langue')"><span class="qi">🗣️</span>Parler</button>
     <button class="q" onclick="go('sos')"><span class="qi">🆘</span>Urgences</button>
-    <button class="q" onclick="openGuide('cuisine')"><span class="qi">🍜</span>Manger</button>
-    <button class="q" onclick="openGuide('lieux')"><span class="qi">📍</span>Où aller</button>
+    <button class="q" onclick="openReco('manger')"><span class="qi">🍜</span>Manger</button>
+    <button class="q" onclick="go('autour')"><span class="qi">📍</span>Autour</button>
     <button class="q" onclick="openGuide('valise')"><span class="qi">🎒</span>Valise</button>
     <button class="q" onclick="openGuide('carnet')"><span class="qi">📝</span>Carnet</button>
   </div>`;
@@ -972,6 +1063,57 @@ function buildMoneyStatic(){
 }
 
 /* ============================================================
+   AUTOUR DE MOI
+   ============================================================ */
+let userPos=null;
+function currentArea(){return DB.get('area','ubud');}
+function currentCat(){return DB.get('cat','manger');}
+function setArea(id){DB.set('area',id);renderReco();}
+function setCat(id){DB.set('cat',id);renderReco();}
+function openReco(cat){go('autour');setCat(cat);}
+function haversine(a,b,c,d){const R=6371,r=Math.PI/180,dLat=(c-a)*r,dLng=(d-b)*r;const x=Math.sin(dLat/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function mapsLink(name,areaName){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(name+', '+areaName+', Bali');}
+function detectArea(){
+  const btn=document.getElementById('geoBtn'), st=document.getElementById('geoStatus');
+  if(!navigator.geolocation){st.textContent='Géolocalisation indisponible — choisis ta zone ci-dessous.';return;}
+  btn.textContent='📡 Localisation en cours…';btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(p=>{
+    userPos={lat:p.coords.latitude,lng:p.coords.longitude};
+    let best=RECO_AREAS[0],bd=1e9;
+    RECO_AREAS.forEach(a=>{const dkm=haversine(userPos.lat,userPos.lng,a.lat,a.lng);if(dkm<bd){bd=dkm;best=a;}});
+    DB.set('area',best.id);
+    st.textContent='📍 Tu sembles vers '+best.n+' (~'+bd.toFixed(bd<10?1:0)+' km du centre).';
+    btn.textContent='📍 Position détectée · rafraîchir';btn.disabled=false;
+    renderReco();
+  },()=>{
+    st.textContent='Position refusée ou indisponible — choisis ta zone ci-dessous.';
+    btn.textContent='📍 Utiliser ma position';btn.disabled=false;
+  },{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+}
+function renderReco(){
+  const area=currentArea(), cat=currentCat();
+  const areaObj=RECO_AREAS.find(a=>a.id===area)||RECO_AREAS[0];
+  document.getElementById('areaPills').innerHTML=RECO_AREAS.map(a=>{
+    let here='';
+    if(userPos&&a.id===area){const dkm=haversine(userPos.lat,userPos.lng,a.lat,a.lng);here='<span class="area-here">~'+dkm.toFixed(dkm<10?1:0)+'km</span>';}
+    return `<button class="pill ${a.id===area?'on':''}" onclick="setArea('${a.id}')">${a.n}${here}</button>`;
+  }).join('');
+  document.getElementById('catPills').innerHTML=RECO_CATS.map(c=>
+    `<button class="pill ${c[0]===cat?'on':''}" onclick="setCat('${c[0]}')">${c[1]} ${c[2]}</button>`).join('');
+  const places=(RECO[area]&&RECO[area][cat])||[];
+  const list=document.getElementById('recoList');
+  if(!places.length){
+    const catLbl=(RECO_CATS.find(c=>c[0]===cat)||['','',''])[2];
+    list.innerHTML=`<div class="empty"><div class="ei">🗺️</div>Pas encore de reco « ${catLbl} » à ${areaObj.n}.<br>Demande-moi dans le chat, je l'ajoute !</div>`;
+    return;
+  }
+  list.innerHTML='<div class="card" style="padding:4px 15px">'+places.map(p=>
+    `<div class="reco-place"><div class="reco-main"><b>${escapeHtml(p[0])}</b><small>${escapeHtml(p[1])}</small>${p[2]?`<span class="reco-tag">${escapeHtml(p[2])}</span>`:''}</div>`+
+    `<a class="reco-go" href="${mapsLink(p[0],areaObj.n)}" target="_blank" rel="noopener">Y aller ›</a></div>`
+  ).join('')+'</div>';
+}
+
+/* ============================================================
    SOS
    ============================================================ */
 function buildSos(){
@@ -1035,6 +1177,7 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
   renderBudget();
   renderGuidePills();
   buildGuide();
+  renderReco();
   buildSos();
 })();
 </script>
