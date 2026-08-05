@@ -262,7 +262,7 @@ textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
       <span class="h-count" id="hcount">—</span>
       <button class="theme-btn" id="themeBtn" aria-label="Thème" onclick="toggleTheme()">◐</button>
     </div>
-    <div class="h-sub" id="hsub">7 → 17 août 2026 · Selamat datang !</div>
+    <div class="h-sub" id="hsub">6 → 17 août 2026 · Selamat datang !</div>
   </div>
 
   <div class="content">
@@ -273,7 +273,7 @@ textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
     <!-- ============ ITINÉRAIRE ============ -->
     <section class="screen" id="s-plan">
       <div class="sh">Itinéraire</div>
-      <div class="sh-sub">10 jours, du sud aux rizières. Chaque jour est modifiable — écris tes notes, elles se sauvegardent toutes seules.</div>
+      <div class="sh-sub">12 jours, du sud aux rizières. Chaque jour est modifiable — écris tes notes, elles se sauvegardent toutes seules.</div>
       <div id="itinList"></div>
     </section>
 
@@ -396,7 +396,7 @@ textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
 /* ============================================================
    DONNÉES DU VOYAGE
    ============================================================ */
-const TRIP = { start:'2026-08-07', end:'2026-08-17', name:'Bali' };
+const TRIP = { start:'2026-08-06', end:'2026-08-17', name:'Bali' };
 const DEFAULT_RATE = 20700;
 
 const ITIN = [
@@ -406,6 +406,12 @@ const ITIN = [
     'Achat carte eSIM / SIM Telkomsel à l\'aéroport si pas fait',
     'Repos, premier repas léger, on s\'acclimate au décalage (+7h l\'été)'
   ], tip:'Retire un peu de cash (BCA/Mandiri) dès l\'aéroport et garde le reçu du visa.'},
+  {t:'Réveil en douceur', z:'Canggu · Seminyak', acts:[
+    'Grasse matinée pour récupérer du vol et du décalage (+7h l\'été)',
+    'Petit-déj dans un café de Canggu, première baignade tranquille',
+    'Balade à pied ou à scooter dans les rizières et ruelles de Canggu',
+    'Coucher de soleil sur la plage, dîner léger — on prend le rythme balinais'
+  ], tip:'Journée tampon idéale : hydrate-toi bien et ménage-toi, l\'acclimatation compte.'},
   {t:'Canggu & côte sud-ouest', z:'Canggu · Seminyak', acts:[
     'Matinée plage / cours de surf débutant à Batu Bolong ou Echo Beach',
     'Cafés brunch de Canggu (la capitale du digital nomad)',
@@ -683,7 +689,7 @@ function tripStatus(){
 function renderHeader(){
   const st=tripStatus();
   document.getElementById('hcount').textContent=st.label;
-  const subs={before:'7 → 17 août 2026 · Selamat datang !',during:'Profite bien de chaque instant 🌴',after:'Sampai jumpa, Bali ! 🌺'};
+  const subs={before:'6 → 17 août 2026 · Selamat datang !',during:'Profite bien de chaque instant 🌴',after:'Sampai jumpa, Bali ! 🌺'};
   document.getElementById('hsub').textContent=subs[st.phase];
 }
 
@@ -1002,7 +1008,7 @@ function applyTheme(t){
   else document.documentElement.removeAttribute('data-theme');
   const dark=t?t==='dark':window.matchMedia('(prefers-color-scheme:dark)').matches;
   document.getElementById('themeBtn').textContent=dark?'☀':'◐';
-  document.querySelector('meta[name=theme-color]').setAttribute('content','#0E4D42');
+  const mtc=document.querySelector('meta[name=theme-color]'); if(mtc) mtc.setAttribute('content','#0E4D42');
 }
 function toggleTheme(){
   const cur=DB.get('theme',null);
