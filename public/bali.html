@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bali">
+<meta name="theme-color" content="#0E4D42">
+<title>Bali · Mon assistant de voyage</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230E4D42'/%3E%3Cpath d='M90 40c14 20 24 34 24 52a24 24 0 0 1-48 0c0-18 10-32 24-52z' fill='%23E8A93B'/%3E%3Cpath d='M40 138c14-10 26-10 40-2 14 8 26 8 40-2' stroke='%23E8A93B' stroke-width='7' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#EFEDE1; --surface:#FBF9F2; --surface2:#F1EEE1;
+  --text:#1C2723; --text2:#55605A; --text3:#8A938B;
+  --border:rgba(28,39,35,.10); --border2:rgba(28,39,35,.16);
+  --brand:#0E4D42; --brand2:#15685A; --brand-lt:#DCE8E2; --on-brand:#F4F1E6;
+  --accent:#C0781A; --accent-lt:#F6E7C9; --accent-tx:#8A5410;
+  --coral:#BB5238;
+  --good:#2C7A57; --good-lt:#D8ECE1;
+  --warn:#B9791A; --warn-lt:#F6E7C9;
+  --bad:#B23F2C; --bad-lt:#F5DED8;
+  --nav:calc(58px + env(safe-area-inset-bottom,0px));
+  --fdisp:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --fbody:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --fmono:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0D1B16; --surface:#16241E; --surface2:#111F19;
+    --text:#ECEADB; --text2:#A6AFA6; --text3:#6E786F;
+    --border:rgba(236,234,219,.12); --border2:rgba(236,234,219,.2);
+    --brand:#0E4D42; --brand2:#3FA88F; --brand-lt:#17332B; --on-brand:#F4F1E6;
+    --accent:#E8A93B; --accent-lt:#382C15; --accent-tx:#E8A93B;
+    --coral:#D9765C;
+    --good:#57B98C; --good-lt:#17322A;
+    --warn:#D99A2E; --warn-lt:#352A14;
+    --bad:#D9705A; --bad-lt:#35211C;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#EFEDE1; --surface:#FBF9F2; --surface2:#F1EEE1;
+  --text:#1C2723; --text2:#55605A; --text3:#8A938B;
+  --border:rgba(28,39,35,.10); --border2:rgba(28,39,35,.16);
+  --brand:#0E4D42; --brand2:#15685A; --brand-lt:#DCE8E2; --on-brand:#F4F1E6;
+  --accent:#C0781A; --accent-lt:#F6E7C9; --accent-tx:#8A5410;
+  --coral:#BB5238; --good:#2C7A57; --good-lt:#D8ECE1;
+  --warn:#B9791A; --warn-lt:#F6E7C9; --bad:#B23F2C; --bad-lt:#F5DED8;
+}
+:root[data-theme="dark"]{
+  --bg:#0D1B16; --surface:#16241E; --surface2:#111F19;
+  --text:#ECEADB; --text2:#A6AFA6; --text3:#6E786F;
+  --border:rgba(236,234,219,.12); --border2:rgba(236,234,219,.2);
+  --brand:#0E4D42; --brand2:#3FA88F; --brand-lt:#17332B; --on-brand:#F4F1E6;
+  --accent:#E8A93B; --accent-lt:#382C15; --accent-tx:#E8A93B;
+  --coral:#D9765C; --good:#57B98C; --good-lt:#17322A;
+  --warn:#D99A2E; --warn-lt:#352A14; --bad:#D9705A; --bad-lt:#35211C;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:var(--fbody);background:var(--bg);color:var(--text);line-height:1.5;overscroll-behavior-y:none;}
+button,input,select,textarea{font-family:inherit;color:inherit;}
+button{border:none;cursor:pointer;background:none;}
+a{color:var(--brand2);}
+::selection{background:var(--accent);color:#1a1205;}
+
+.app{display:flex;flex-direction:column;min-height:100dvh;}
+
+/* HEADER */
+.header{background:var(--brand);color:var(--on-brand);padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 12px;flex-shrink:0;position:sticky;top:0;z-index:40;}
+.header-row{display:flex;align-items:center;gap:10px;}
+.h-mark{font-size:20px;line-height:1;}
+.header h1{font-family:var(--fdisp);font-size:19px;font-weight:600;letter-spacing:.01em;flex:1;}
+.h-count{font-size:11.5px;font-weight:600;background:rgba(244,241,230,.16);padding:4px 11px;border-radius:20px;white-space:nowrap;}
+.h-sub{font-size:11px;color:rgba(244,241,230,.62);margin-top:3px;padding-left:30px;}
+.theme-btn{font-size:15px;background:rgba(244,241,230,.14);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--on-brand);}
+
+.content{flex:1;padding:14px 14px calc(var(--nav) + 16px);max-width:640px;width:100%;margin:0 auto;}
+.screen{display:none;animation:fade .22s ease;}
+.screen.on{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){.screen,.toast{animation:none!important;transition:none!important;}}
+
+/* BOTTOM NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:var(--surface);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:50;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text3);font-size:10px;font-weight:600;padding-top:5px;transition:color .15s;}
+.ni.on{color:var(--brand2);}
+.ni svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+.ni.on svg{stroke-width:2.2;}
+
+/* SECTION TITLES */
+.sh{font-family:var(--fdisp);font-size:24px;font-weight:600;margin:2px 0 3px;text-wrap:balance;letter-spacing:.01em;}
+.sh-sub{font-size:13px;color:var(--text2);margin-bottom:16px;}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent-tx);margin:22px 0 9px;}
+.eyebrow:first-child{margin-top:4px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:11px;}
+.card-t{font-family:var(--fdisp);font-size:16px;font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+.card-t .ic{font-size:16px;}
+
+/* HERO / COUNTDOWN */
+.hero{background:linear-gradient(150deg,#0E4D42,#0a3b32 55%,#123f30);border-radius:18px;padding:20px;margin-bottom:14px;color:var(--on-brand);position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(232,169,59,.28),transparent 68%);}
+.hero-lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(244,241,230,.6);}
+.hero-big{font-family:var(--fdisp);font-size:34px;font-weight:600;line-height:1.05;margin:6px 0 4px;position:relative;}
+.hero-dates{font-size:12.5px;color:rgba(244,241,230,.72);position:relative;}
+.hero-prog{height:6px;background:rgba(244,241,230,.16);border-radius:4px;margin-top:14px;overflow:hidden;position:relative;}
+.hero-prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f0c063);border-radius:4px;transition:width .5s;}
+
+/* QUICK GRID */
+.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:6px;}
+.q{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:11px 5px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text2);font-size:10.5px;font-weight:600;text-align:center;transition:transform .1s;}
+.q:active{transform:scale(.94);}
+.q .qi{font-size:20px;line-height:1;}
+
+/* PILL TABS (guide) */
+.pills{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;margin:0 -14px 14px;padding-left:14px;padding-right:14px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.pills::-webkit-scrollbar{display:none;}
+.pill{flex:0 0 auto;padding:8px 15px;border-radius:20px;font-size:13px;font-weight:600;background:var(--surface);color:var(--text2);border:1px solid var(--border2);white-space:nowrap;}
+.pill.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand);}
+.gp{display:none;}.gp.on{display:block;animation:fade .2s;}
+
+/* LISTS / ROWS */
+.row{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);}
+.row:last-child{border-bottom:none;}
+.row-ic{font-size:19px;flex-shrink:0;width:24px;text-align:center;line-height:1.4;}
+.row-main{flex:1;min-width:0;}
+.row-main b{font-size:14px;font-weight:600;display:block;}
+.row-main small{font-size:12.5px;color:var(--text2);display:block;margin-top:1px;}
+
+/* PHRASE */
+.ph{padding:11px 0;border-bottom:1px solid var(--border);}
+.ph:last-child{border-bottom:none;}
+.ph-fr{font-size:13px;color:var(--text2);}
+.ph-id{font-size:16px;font-weight:600;font-family:var(--fdisp);margin-top:1px;}
+.ph-pn{font-size:12px;color:var(--accent-tx);font-style:italic;margin-top:1px;}
+.ph-pn::before{content:"🔊 ";font-style:normal;}
+
+/* TAGS */
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;background:var(--brand-lt);color:var(--brand2);margin:0 5px 5px 0;}
+.tag.acc{background:var(--accent-lt);color:var(--accent-tx);}
+
+/* DO / DONT */
+.dodont{border-radius:12px;padding:12px 13px;margin-bottom:9px;font-size:13.5px;display:flex;gap:10px;align-items:flex-start;border:1px solid transparent;}
+.dodont b{display:block;font-size:13.5px;margin-bottom:1px;}
+.dodont small{color:var(--text2);font-size:12.5px;}
+.do{background:var(--good-lt);border-color:color-mix(in srgb,var(--good) 22%,transparent);}
+.dont{background:var(--bad-lt);border-color:color-mix(in srgb,var(--bad) 22%,transparent);}
+.dodont .dd-ic{font-size:16px;line-height:1.3;}
+
+/* NOTE / CALLOUT */
+.callout{border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:11px;border-left:3px solid var(--accent);background:var(--accent-lt);color:var(--text);}
+.callout.warnc{border-left-color:var(--warn);background:var(--warn-lt);}
+.callout.info{border-left-color:var(--brand2);background:var(--brand-lt);}
+.callout b{font-weight:700;}
+
+/* FORM */
+.fl{font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;}
+.fi{width:100%;background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;padding:12px 13px;font-size:16px;outline:none;margin-bottom:12px;}
+.fi:focus{border-color:var(--brand2);}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A938B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
+textarea.fi{resize:vertical;min-height:60px;font-size:14px;line-height:1.5;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{width:100%;background:var(--brand);color:var(--on-brand);border-radius:13px;padding:14px;font-size:15px;font-weight:600;transition:opacity .15s;}
+.btn:active{opacity:.8;}
+.btn.acc{background:var(--accent);color:#231603;}
+.btn.ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text2);}
+
+/* CONVERTER */
+.conv{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:11px;}
+.conv-io{display:flex;align-items:center;gap:10px;}
+.conv-fld{flex:1;}
+.conv-fld label{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--text3);text-transform:uppercase;}
+.conv-fld input{width:100%;background:transparent;border:none;border-bottom:2px solid var(--border2);font-size:26px;font-weight:700;font-family:var(--fmono);padding:5px 0;outline:none;font-variant-numeric:tabular-nums;}
+.conv-fld input:focus{border-color:var(--accent);}
+.conv-swap{font-size:18px;color:var(--brand2);padding:4px;flex-shrink:0;}
+.conv-rate{font-size:12px;color:var(--text2);margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.conv-rate input{width:82px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:5px 8px;font-size:13px;font-family:var(--fmono);text-align:right;font-variant-numeric:tabular-nums;}
+
+/* PRICE REF */
+.pref{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:13.5px;}
+.pref .pk{padding:7px 0;border-bottom:1px solid var(--border);color:var(--text2);}
+.pref .pv{padding:7px 0;border-bottom:1px solid var(--border);text-align:right;font-family:var(--fmono);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+/* BUDGET */
+.bud-total{text-align:center;padding:8px 0 4px;}
+.bud-total .bt-idr{font-family:var(--fmono);font-size:32px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;}
+.bud-total .bt-eur{font-size:14px;color:var(--text2);margin-top:4px;}
+.bud-cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;justify-content:center;}
+.bud-cat{font-size:11.5px;padding:4px 10px;border-radius:9px;background:var(--surface2);color:var(--text2);font-weight:600;}
+.bud-cat b{color:var(--text);font-family:var(--fmono);}
+.exp{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);}
+.exp:last-child{border-bottom:none;}
+.exp-ic{font-size:17px;width:22px;text-align:center;}
+.exp-main{flex:1;min-width:0;}
+.exp-main b{font-size:14px;font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.exp-main small{font-size:11.5px;color:var(--text3);}
+.exp-amt{font-family:var(--fmono);font-weight:600;font-size:14px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.exp-amt small{display:block;font-size:11px;color:var(--text3);font-weight:400;}
+.exp-del{color:var(--text3);font-size:15px;padding:2px 4px;}
+
+/* CHECKLIST */
+.chk{display:flex;align-items:flex-start;gap:11px;padding:11px 2px;border-bottom:1px solid var(--border);cursor:pointer;}
+.chk:last-child{border-bottom:none;}
+.chk-box{width:22px;height:22px;border-radius:7px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.12s;margin-top:1px;}
+.chk.done .chk-box{background:var(--good);border-color:var(--good);}
+.chk-box svg{width:13px;height:13px;stroke:#fff;stroke-width:3;fill:none;opacity:0;}
+.chk.done .chk-box svg{opacity:1;}
+.chk-lbl{font-size:14px;flex:1;line-height:1.4;}
+.chk.done .chk-lbl{color:var(--text3);text-decoration:line-through;}
+.chk-lbl small{display:block;color:var(--text3);font-size:12px;text-decoration:none;}
+
+/* ITINERARY */
+.day{background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:14px;margin-bottom:11px;}
+.day-hd{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.day-num{width:38px;height:38px;border-radius:11px;background:var(--brand-lt);color:var(--brand2);font-family:var(--fdisp);font-weight:700;font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1;}
+.day-num small{font-size:8.5px;font-weight:600;letter-spacing:.03em;}
+.day-hd-main{flex:1;min-width:0;}
+.day-hd-main b{font-family:var(--fdisp);font-size:16px;font-weight:600;display:block;}
+.day-hd-main small{font-size:12px;color:var(--accent-tx);font-weight:600;}
+.day.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.day.today .day-num{background:var(--accent);color:#231603;}
+.day-acts{list-style:none;margin:4px 0 0;}
+.day-acts li{font-size:13.5px;padding:4px 0 4px 18px;position:relative;color:var(--text);}
+.day-acts li::before{content:"";position:absolute;left:3px;top:11px;width:5px;height:5px;border-radius:50%;background:var(--accent);}
+.day-tip{font-size:12.5px;color:var(--text2);background:var(--surface2);border-radius:9px;padding:8px 10px;margin-top:9px;}
+.day-tip b{color:var(--accent-tx);}
+.day-note{width:100%;background:var(--surface2);border:1px dashed var(--border2);border-radius:9px;padding:9px 10px;font-size:13px;margin-top:9px;resize:vertical;min-height:34px;outline:none;}
+.day-note:focus{border-style:solid;border-color:var(--brand2);}
+
+/* SOS */
+.sos{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 15px;margin-bottom:9px;text-decoration:none;color:var(--text);}
+.sos.urgent{background:var(--bad-lt);border-color:color-mix(in srgb,var(--bad) 30%,transparent);}
+.sos-ic{font-size:22px;flex-shrink:0;}
+.sos-main{flex:1;}
+.sos-main b{font-size:15px;font-weight:600;display:block;}
+.sos-main small{font-size:12.5px;color:var(--text2);}
+.sos-num{font-family:var(--fmono);font-weight:700;font-size:17px;color:var(--bad);}
+.sos.urgent .sos-num{font-size:22px;}
+.sos-call{background:var(--good);color:#fff;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;flex-shrink:0;}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav) + 12px);left:50%;transform:translateX(-50%) translateY(8px);background:var(--text);color:var(--bg);padding:11px 18px;border-radius:22px;font-size:14px;font-weight:600;z-index:200;opacity:0;transition:.22s;pointer-events:none;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.28);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.muted{color:var(--text3);font-size:12px;}
+.empty{text-align:center;padding:38px 20px;color:var(--text3);font-size:13px;}
+.empty .ei{font-size:38px;margin-bottom:8px;}
+.hr{height:1px;background:var(--border);margin:18px 0;border:none;}
+.install-tip{font-size:12px;color:var(--text2);background:var(--brand-lt);border-radius:12px;padding:11px 13px;margin-top:14px;display:flex;gap:9px;align-items:flex-start;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-row">
+      <span class="h-mark">🌺</span>
+      <h1>Bali</h1>
+      <span class="h-count" id="hcount">—</span>
+      <button class="theme-btn" id="themeBtn" aria-label="Thème" onclick="toggleTheme()">◐</button>
+    </div>
+    <div class="h-sub" id="hsub">7 → 17 août 2026 · Selamat datang !</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ============ ACCUEIL ============ -->
+    <section class="screen on" id="s-home"></section>
+
+    <!-- ============ ITINÉRAIRE ============ -->
+    <section class="screen" id="s-plan">
+      <div class="sh">Itinéraire</div>
+      <div class="sh-sub">10 jours, du sud aux rizières. Chaque jour est modifiable — écris tes notes, elles se sauvegardent toutes seules.</div>
+      <div id="itinList"></div>
+    </section>
+
+    <!-- ============ ARGENT ============ -->
+    <section class="screen" id="s-money">
+      <div class="sh">Argent</div>
+      <div class="sh-sub">Convertisseur hors-ligne, budget et repères de prix. Attention aux zéros : 1 € ≈ 20 000 Rp !</div>
+
+      <div class="conv">
+        <div class="conv-io">
+          <div class="conv-fld">
+            <label>Euro (€)</label>
+            <input type="number" id="cEur" inputmode="decimal" placeholder="0" value="10" oninput="convFrom('eur')">
+          </div>
+          <button class="conv-swap" aria-label="inverser">⇄</button>
+          <div class="conv-fld">
+            <label>Rupiah (Rp)</label>
+            <input type="number" id="cIdr" inputmode="numeric" placeholder="0" oninput="convFrom('idr')">
+          </div>
+        </div>
+        <div class="conv-rate">
+          <span>Taux : 1 € =</span>
+          <span><input type="number" id="cRate" inputmode="numeric" onchange="setRate()"> Rp</span>
+        </div>
+      </div>
+
+      <div class="eyebrow">Budget du voyage</div>
+      <div class="card">
+        <div class="bud-total">
+          <div class="bt-idr" id="budIdr">0 Rp</div>
+          <div class="bt-eur" id="budEur">≈ 0 €</div>
+        </div>
+        <div class="bud-cats" id="budCats"></div>
+      </div>
+      <div class="card">
+        <div class="card-t"><span class="ic">➕</span> Ajouter une dépense</div>
+        <div class="frow">
+          <div><label class="fl">Montant</label><input class="fi" type="number" id="expAmt" inputmode="decimal" placeholder="0"></div>
+          <div><label class="fl">Devise</label>
+            <select class="fi" id="expCur"><option value="idr">Rp</option><option value="eur">€</option></select>
+          </div>
+        </div>
+        <label class="fl">Libellé</label>
+        <input class="fi" id="expLbl" placeholder="ex. Dîner warung, scooter…">
+        <label class="fl">Catégorie</label>
+        <select class="fi" id="expCat">
+          <option>🏨 Logement</option><option>🛵 Transport</option><option>🍜 Nourriture</option>
+          <option>🏄 Activités</option><option>🛍️ Shopping</option><option>💠 Autre</option>
+        </select>
+        <button class="btn" onclick="addExp()">Ajouter</button>
+      </div>
+      <div id="expList"></div>
+
+      <div class="eyebrow">Repères de prix (indicatif)</div>
+      <div class="card"><div class="pref" id="priceRef"></div></div>
+
+      <div class="eyebrow">Conseils argent</div>
+      <div id="moneyTips"></div>
+    </section>
+
+    <!-- ============ GUIDE ============ -->
+    <section class="screen" id="s-guide">
+      <div class="sh">Guide</div>
+      <div class="pills" id="guidePills"></div>
+
+      <div class="gp on" id="g-langue"></div>
+      <div class="gp" id="g-culture"></div>
+      <div class="gp" id="g-cuisine"></div>
+      <div class="gp" id="g-lieux"></div>
+      <div class="gp" id="g-transport"></div>
+      <div class="gp" id="g-valise"></div>
+      <div class="gp" id="g-carnet"></div>
+    </section>
+
+    <!-- ============ SOS ============ -->
+    <section class="screen" id="s-sos">
+      <div class="sh">Santé & urgences</div>
+      <div class="sh-sub">Tape un numéro pour appeler directement. En cas d'urgence vitale : <b>112</b>.</div>
+      <div id="sosList"></div>
+
+      <div class="eyebrow">Mes infos d'urgence</div>
+      <div class="card">
+        <p class="muted" style="margin-bottom:11px">Renseigne-les maintenant — accessibles hors-ligne si besoin.</p>
+        <label class="fl">Assurance voyage — n° d'assistance 24/7</label>
+        <input class="fi" id="ins_phone" placeholder="+33 …">
+        <label class="fl">N° de contrat</label>
+        <input class="fi" id="ins_policy" placeholder="—">
+        <div class="frow">
+          <div><label class="fl">Groupe sanguin</label><input class="fi" id="ins_blood" placeholder="—"></div>
+          <div><label class="fl">Allergies</label><input class="fi" id="ins_allerg" placeholder="—"></div>
+        </div>
+        <label class="fl">Personne à prévenir</label>
+        <input class="fi" id="ins_ice" placeholder="Nom + téléphone">
+        <button class="btn" onclick="saveIce()">Enregistrer</button>
+      </div>
+
+      <div class="eyebrow">Éviter la « Bali belly »</div>
+      <div id="healthTips"></div>
+    </section>
+
+  </div>
+
+  <nav class="nav">
+    <button class="ni on" id="ni-home" onclick="go('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Accueil</button>
+    <button class="ni" id="ni-plan" onclick="go('plan')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Plan</button>
+    <button class="ni" id="ni-money" onclick="go('money')">
+      <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Argent</button>
+    <button class="ni" id="ni-guide" onclick="go('guide')">
+      <svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>Guide</button>
+    <button class="ni" id="ni-sos" onclick="go('sos')">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><path d="M12 8v4M12 15h.01"/></svg>SOS</button>
+  </nav>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DONNÉES DU VOYAGE
+   ============================================================ */
+const TRIP = { start:'2026-08-07', end:'2026-08-17', name:'Bali' };
+const DEFAULT_RATE = 20700;
+
+const ITIN = [
+  {t:'Arrivée à Bali', z:'Aéroport DPS · Sud', acts:[
+    'Atterrissage à Ngurah Rai (DPS) — file e-VOA si déjà fait en ligne',
+    'Transfert vers l\'hébergement (Grab/Gojek ou transfert pré-réservé, pas les rabatteurs)',
+    'Achat carte eSIM / SIM Telkomsel à l\'aéroport si pas fait',
+    'Repos, premier repas léger, on s\'acclimate au décalage (+7h l\'été)'
+  ], tip:'Retire un peu de cash (BCA/Mandiri) dès l\'aéroport et garde le reçu du visa.'},
+  {t:'Canggu & côte sud-ouest', z:'Canggu · Seminyak', acts:[
+    'Matinée plage / cours de surf débutant à Batu Bolong ou Echo Beach',
+    'Cafés brunch de Canggu (la capitale du digital nomad)',
+    'Coucher de soleil à Tanah Lot (temple sur son rocher) ou en beach club',
+    'Balade dans les rizières de Canggu au calme'
+  ], tip:'Tanah Lot est bondé au coucher du soleil — arrive 1h avant pour la lumière.'},
+  {t:'Péninsule de Bukit', z:'Uluwatu', acts:[
+    'Temple d\'Uluwatu perché sur la falaise (attention aux singes voleurs !)',
+    'Plages de rêve : Padang Padang, Bingin, Suluban',
+    'Danse Kecak au coucher du soleil au temple (spectacle de feu et chants)',
+    'Dîner poisson grillé les pieds dans le sable à Jimbaran'
+  ], tip:'Le Kecak d\'Uluwatu se remplit vite : arrive tôt pour une place face au soleil.'},
+  {t:'Cap sur Ubud', z:'Route → Ubud', acts:[
+    'Route vers les terres (≈1h30–2h avec le trafic) — loue un chauffeur à la journée',
+    'Arrêt plantation de café & dégustation (goûte le luwak si curieux)',
+    'Installation à Ubud, cœur culturel de Bali',
+    'Campuhan Ridge Walk en fin de journée (crête verte, gratuit)'
+  ], tip:'Un chauffeur privé à la journée (~600–800k Rp) rend les excursions bien plus simples.'},
+  {t:'Ubud culture & rizières', z:'Ubud', acts:[
+    'Rizières en terrasses de Tegalalang au lever du jour (avant la foule)',
+    'Marché d\'Ubud + Palais royal (Puri Saren)',
+    'Sacred Monkey Forest (garde lunettes et affaires près de toi)',
+    'Cours de cuisine balinaise ou séance de yoga l\'après-midi'
+  ], tip:'À Tegalalang, les « balançoires » et points photo sont payants — négocie le pack.'},
+  {t:'Temples d\'eau & cascades', z:'Centre / Est', acts:[
+    'Tirta Empul : temple de purification (rituel melukat, apporte un sarong)',
+    'Cascade Tegenungan, Tibumana ou Kanto Lampo',
+    'Point de vue sur le volcan Batur & lac depuis Kintamani (déjeuner vue)',
+    'Café Luwak / villages d\'artisans sur la route'
+  ], tip:'Pour le melukat à Tirta Empul, prévois un change et respecte l\'ordre des fontaines.'},
+  {t:'Est sauvage ou Batur', z:'Lempuyang / Sidemen', acts:[
+    'Option A : lever de soleil au sommet du Mont Batur (trek 2h, guide requis)',
+    'Option B : Lempuyang « Gates of Heaven » + palais d\'eau Tirta Gangga',
+    'Rizières préservées et villages tisserands de Sidemen',
+    'Fin de journée détente / massage balinais'
+  ], tip:'Le trek du Batur part vers 3h30 du matin — couche-toi tôt la veille et prends une laine.'},
+  {t:'Nusa Penida', z:'Île · excursion', acts:[
+    'Départ tôt en speedboat depuis Sanur (≈45 min de traversée)',
+    'Kelingking Beach (la falaise en forme de T-Rex), Broken Beach, Angel\'s Billabong',
+    'Snorkeling avec les raies manta à Manta Point (selon la mer)',
+    'Retour en fin d\'après-midi — journée intense mais inoubliable'
+  ], tip:'Mer parfois agitée : anti-nausée conseillé. Réserve un tour avec chauffeur sur l\'île.'},
+  {t:'Détente côte sud', z:'Seminyak / Sanur', acts:[
+    'Grasse matinée méritée — spa, piscine, plage',
+    'Beach club (Seminyak / Canggu) pour le coucher de soleil',
+    'Shopping : boutiques de créateurs, marché de Seminyak',
+    'Bon restaurant pour se faire plaisir le soir'
+  ], tip:'Dans les beach clubs, un minimum de consommation remplace souvent l\'entrée.'},
+  {t:'Derniers instants', z:'Au choix', acts:[
+    'Dernière plage ou activité manquée (surf, plongée à Amed…)',
+    'Achats souvenirs : café, épices, textiles, artisanat en bois',
+    'Massage / repas mémorable',
+    'On prépare les valises tranquillement'
+  ], tip:'Garde de la place et du cash pour les souvenirs — et pense à la taxe de sortie éventuelle.'},
+  {t:'Départ · Fête de l\'Indépendance 🇮🇩', z:'Aéroport DPS', acts:[
+    '17 août = Hari Kemerdekaan : drapeaux rouge & blanc, défilés partout',
+    'Check-out et transfert aéroport — prévois de la marge (trafic + festivités)',
+    'Dépense ou reconvertis tes derniers rupiah avant l\'embarquement',
+    'Sampai jumpa, Bali ! 🌺'
+  ], tip:'Les routes peuvent être ralenties par les célébrations du 17 — pars à l\'aéroport en avance.'}
+];
+
+const PHRASES = [
+  ['Politesse','Bonjour (matin)','Selamat pagi','se-la-MAT PA-gui'],
+  ['Politesse','Bonjour (journée)','Selamat siang','se-la-MAT SI-yang'],
+  ['Politesse','Bonsoir','Selamat malam','se-la-MAT MA-lam'],
+  ['Politesse','Merci','Terima kasih','te-RI-ma KA-si'],
+  ['Politesse','De rien','Sama-sama','SA-ma SA-ma'],
+  ['Politesse','S\'il vous plaît','Tolong','TO-long'],
+  ['Politesse','Pardon / Excusez-moi','Maaf / Permisi','ma-AF / per-MI-si'],
+  ['Politesse','Oui / Non','Ya / Tidak','ya / TI-da'],
+  ['Politesse','Au revoir','Sampai jumpa','SAM-paï JOUM-pa'],
+  ['Base','Comment ça va ?','Apa kabar ?','A-pa KA-bar'],
+  ['Base','Je vais bien','Baik-baik saja','BA-ï BA-ï SA-dja'],
+  ['Base','Je ne comprends pas','Saya tidak mengerti','SA-ya TI-da me-nger-TI'],
+  ['Base','Parlez-vous anglais ?','Bisa bahasa Inggris ?','BI-sa ba-HA-sa ING-gris'],
+  ['Base','Comment vous appelez-vous ?','Siapa nama Anda ?','si-A-pa NA-ma AN-da'],
+  ['Base','Je m\'appelle…','Nama saya…','NA-ma SA-ya'],
+  ['Argent','Combien ça coûte ?','Berapa harganya ?','be-RA-pa har-GA-nya'],
+  ['Argent','C\'est trop cher','Terlalu mahal','ter-LA-lou ma-HAL'],
+  ['Argent','Moins cher, s\'il vous plaît','Boleh kurang ?','BO-lé KOU-rang'],
+  ['Argent','L\'addition','Minta bon','MIN-ta bon'],
+  ['Argent','Mille (ex. prix)','Ribu','RI-bou'],
+  ['Orientation','Où est… ?','Di mana… ?','di MA-na'],
+  ['Orientation','Les toilettes','Kamar kecil / WC','KA-mar ke-TCHIL'],
+  ['Orientation','Tout droit / Gauche / Droite','Lurus / Kiri / Kanan','LOU-rous / KI-ri / KA-nan'],
+  ['Orientation','Arrêtez ici','Berhenti di sini','ber-HEN-ti di SI-ni'],
+  ['Nourriture','C\'est délicieux !','Enak !','é-NAK'],
+  ['Nourriture','Pas épicé','Tidak pedas','TI-da pe-DAS'],
+  ['Nourriture','Eau (potable)','Air (minum)','A-ir MI-noum'],
+  ['Nourriture','Sans viande / végétarien','Tanpa daging','TAN-pa DA-guing'],
+  ['Nourriture','Encore un peu, svp','Lagi, tolong','LA-gui TO-long'],
+  ['Nombres','1 · 2 · 3','Satu · Dua · Tiga','SA-tou · DOU-a · TI-ga'],
+  ['Nombres','4 · 5 · 6','Empat · Lima · Enam','em-PAT · LI-ma · e-NAM'],
+  ['Nombres','7 · 8 · 9 · 10','Tujuh · Delapan · Sembilan · Sepuluh','TOU-jouh · de-LA-pan · sem-BI-lan · se-POU-louh']
+];
+
+const CULTURE = {
+  do:[
+    ['🙏','Porte un sarong au temple','Épaules et genoux couverts. Souvent prêté/loué à l\'entrée.'],
+    ['🤝','Donne et reçois de la main droite','La main gauche est considérée impure.'],
+    ['🚶','Contourne les offrandes (canang sari)','Ces petits paniers de fleurs au sol sont sacrés — ne les enjambe pas, ne marche pas dessus.'],
+    ['📸','Demande avant de photographier','Surtout lors des cérémonies et des prières.'],
+    ['😊','Négocie avec le sourire','Sur les marchés : commence vers 40–50 % du prix, reste courtois.'],
+    ['👕','Habille-toi correctement hors plage','Tenue couvrante dans les temples et villages.']
+  ],
+  dont:[
+    ['🙅','Ne touche pas la tête des gens','La tête est la partie la plus sacrée du corps.'],
+    ['🦶','Ne pointe pas les pieds vers autrui ou un autel','Ni vers les offrandes. Assieds-toi jambes repliées au temple.'],
+    ['👆','Ne pointe pas du doigt','Utilise la main ouverte, paume vers le haut.'],
+    ['🩸','N\'entre pas au temple si tu saignes','Règle traditionnelle (menstruation, plaie ouverte).'],
+    ['🐒','Ne provoque pas les singes','Lunettes, chapeaux, téléphones : rangés à Uluwatu et Monkey Forest.'],
+    ['🗣️','Ne hausse pas le ton','Perdre son calme en public fait « perdre la face ».']
+  ],
+  fest:[
+    ['🇮🇩','17 août — Fête de l\'Indépendance','Ton jour de départ ! Drapeaux rouge & blanc, défilés, jeux (panjat pinang). Ambiance festive mais routes ralenties.'],
+    ['🌸','Offrandes quotidiennes','Les canang sari déposés partout le matin rythment la vie balinaise — un spectacle de tous les jours.'],
+    ['🎭','Danses sacrées','Kecak (chants), Legong, Barong : cherche une représentation en soirée, surtout à Ubud et Uluwatu.']
+  ]
+};
+
+const CUISINE = {
+  plats:[
+    ['🍚','Nasi / Mie goreng','Riz ou nouilles sautés, œuf sur le dessus — le classique partout, pas cher.'],
+    ['🐷','Babi guling','Cochon de lait rôti aux épices, LA spécialité balinaise (Bali n\'est pas musulmane).'],
+    ['🍗','Ayam / Bebek betutu','Poulet ou canard longuement mijoté aux épices, tendre à souhait.'],
+    ['🍢','Sate lilit','Brochettes balinaises de poisson émincé sur bâton de citronnelle.'],
+    ['🥗','Gado-gado / Nasi campur','Légumes sauce cacahuète / assiette composée : parfait pour goûter à tout.'],
+    ['🍌','Pisang goreng','Bananes frites — le dessert-snack roi. Essaie aussi le martabak sucré.'],
+    ['🐉','Fruits tropicaux','Mangoustan, salak (fruit serpent), rambutan, fruit du dragon, mangue.'],
+    ['🍺','Boissons','Bière Bintang, kopi Bali, es kelapa (coco fraîche), jus pressés, jamu (tonique).']
+  ]
+};
+
+const LIEUX = {
+  regions:[
+    ['🏄','Bukit / Uluwatu','Falaises, temples, spots de surf et plages de rêve au sud.'],
+    ['🍸','Seminyak / Canggu','Beach clubs, cafés branchés, boutiques et vie nocturne.'],
+    ['🌾','Ubud','Cœur culturel : rizières, yoga, art, cascades et forêt des singes.'],
+    ['🤿','Est (Amed, Tulamben, Sidemen)','Authentique et calme. Plongée sur l\'épave de l\'USS Liberty à Tulamben.'],
+    ['🏞️','Nord (Munduk, Lovina)','Lacs volcaniques, cascades et dauphins au lever du jour.'],
+    ['🏝️','Îles Nusa','Penida (Kelingking), Lembongan et Ceningan : plages spectaculaires, snorkeling.']
+  ],
+  spots:[
+    ['⛩️','Temples','Tanah Lot (mer), Uluwatu (falaise), Besakih (temple-mère), Lempuyang (Gates of Heaven), Tirta Empul (purification), Ulun Danu Beratan (lac).'],
+    ['🌾','Rizières','Tegalalang (proche Ubud) et Jatiluwih (classé UNESCO, plus vaste et paisible).'],
+    ['💦','Cascades','Sekumpul (la plus belle), Tegenungan, Tibumana, Kanto Lampo, Nungnung.']
+  ]
+};
+
+const TRANSPORT = [
+  ['📱','Gojek & Grab','Les 2 applis indispensables : scooter-taxi, voiture, livraison de repas. Prix affiché à l\'avance, paiement in-app. Installe-les AVANT de partir.'],
+  ['🚕','Bluebird','Taxis à compteur fiables (appli Bluebird ou voitures bleu clair au logo oiseau). Évite les faux Bluebird.'],
+  ['🛵','Location de scooter','~70–100k Rp/jour. Casque obligatoire, permis international recommandé (contrôles). Vérifie l\'assurance et l\'état du scoot. Conduite à gauche.'],
+  ['🚗','Chauffeur privé','~600–800k Rp/jour tout compris : le plus simple pour les excursions (Nusa Penida, Est, temples). Négocie l\'itinéraire la veille.'],
+  ['⚠️','Zones sensibles','Gojek/Grab sont mal vus/interdits par les taxis locaux dans certains coins (Ubud centre, quelques plages). Marche un peu ou prends un transport local.'],
+  ['🛬','À l\'aéroport','Ignore les rabatteurs « taxi ? taxi ? ». Commande un Grab/Gojek au point dédié ou réserve un transfert.']
+];
+
+const MONEYTIPS = [
+  ['💵','Cash roi','Warungs, marchés, scooters : souvent en espèces. Garde des petites coupures (billets de 10k–50k).'],
+  ['🏧','Retraits','Utilise les DAB des grandes banques (BCA, Mandiri, BNI). Frais ~50k/retrait, plafond souvent 2–3M. Refuse la « conversion » proposée par le DAB (DCC).'],
+  ['💱','Bureaux de change','Compare les taux, compte devant toi, méfie-toi des taux « trop beaux » (arnaque). Évite les échoppes sombres.'],
+  ['🧾','Pourboire','Non obligatoire. Restos : souvent +5–10 % service +10 % taxe déjà inclus. Sinon arrondis, 10–20k pour un bon service.'],
+  ['🔢','Les zéros','1 € ≈ 20 000 Rp. Vérifie toujours le nombre de zéros avant de payer !']
+];
+
+const HEALTH = [
+  ['💧','Eau en bouteille uniquement','Jamais l\'eau du robinet — même pour se brosser les dents. Vérifie que la capsule est scellée.'],
+  ['🧊','Glaçons & crudités','Glaçons ok dans les endroits fréquentés (tube industriel). Méfie-toi des salades lavées à l\'eau du robinet dans les lieux douteux.'],
+  ['🍲','Mange là où ça tourne','Un warung plein = rotation rapide = plus frais. Plats bien chauds et cuits.'],
+  ['🧴','Hygiène','Gel hydroalcoolique avant de manger, surtout avec les mains.'],
+  ['💊','Ta trousse','Imodium, Smecta, sels de réhydratation (oralite), probiotiques, paracétamol, répulsif, antiseptique, pansements.'],
+  ['🩹','Blessures scooter','La 1ʳᵉ cause de bobos à Bali. Désinfecte la moindre plaie (risque d\'infection tropicale rapide).'],
+  ['🦟','Moustiques','Risque de dengue (moustique de jour) : répulsif matin et soir. Paludisme quasi nul en zone touristique.'],
+  ['🐕','Animaux','Risque de rage (chiens, singes). Évite le contact ; en cas de morsure/griffure : laver 15 min + consulter vite.']
+];
+
+const SOS = [
+  ['urgent','🚨','Urgences (tout)','Numéro national unique','112'],
+  ['','👮','Police','Police nationale','110'],
+  ['','🚑','Ambulance','Secours médical','118'],
+  ['','🚒','Pompiers','Incendie','113'],
+  ['','🏥','BIMC Hospital','Hôpital international (Kuta & Nusa Dua) — anglophone','+623614493333'],
+  ['','🏥','Siloam Hospitals Bali','Grand hôpital privé, Denpasar/Kuta','+623617779900'],
+  ['','🇫🇷','Ambassade de France','Jakarta — pour les Français en difficulté','+622123557600'],
+  ['','💊','Pharmacie (Apotek)','Kimia Farma, Guardian, Watsons — dans les centres','']
+];
+
+const PACK = {
+  'Essentiels':[
+    ['Passeport valable 6 mois + 2 photocopies',''],
+    ['e-VOA imprimé/téléchargé + preuve taxe touristique',''],
+    ['Attestation d\'assurance voyage (+ n° assistance)',''],
+    ['Billets d\'avion + preuve de sortie du territoire',''],
+    ['Cartes bancaires (sans frais) + un peu de cash EUR à changer','']
+  ],
+  'Vêtements (saison sèche, chaud)':[
+    ['Vêtements légers, respirants',''],
+    ['1 tenue couvrante épaules/genoux pour les temples',''],
+    ['Maillots de bain (x2)',''],
+    ['Sandales/tongs + 1 paire pour marcher/randonner',''],
+    ['Une petite laine pour le Batur / la clim',''],
+    ['Poncho léger (une averse reste possible)','']
+  ],
+  'Santé & soins':[
+    ['Trousse pharma (voir onglet Santé)',''],
+    ['Crème solaire haute protection + après-soleil',''],
+    ['Répulsif anti-moustiques',''],
+    ['Chapeau + lunettes de soleil',''],
+    ['Traitements personnels (ordonnance à l\'appui)','']
+  ],
+  'Tech':[
+    ['Batterie externe + câbles',''],
+    ['Adaptateur : prises type C/F, 230V — identique à la France ✔',''],
+    ['eSIM installée ou plan pour SIM locale',''],
+    ['Applis : Gojek, Grab, Bluebird, Google Maps hors-ligne','']
+  ]
+};
+
+const PREDEP = [
+  ['✈️','Faire l\'e-VOA en ligne','evisa.imigrasi.go.id — 500k Rp + taxe 150k. Évite la file à l\'arrivée.'],
+  ['🛡️','Souscrire/vérifier l\'assurance voyage','Avec rapatriement. Note le n° d\'assistance dans l\'onglet SOS.'],
+  ['📱','Installer Gojek + Grab + Bluebird','Et créer les comptes AVANT de partir.'],
+  ['📶','Commander une eSIM Bali','Ou prévoir une SIM Telkomsel à l\'aéroport.'],
+  ['💳','Prévenir la banque / plafonds retrait','Pour éviter le blocage carte à l\'étranger.'],
+  ['🗺️','Télécharger Google Maps de Bali hors-ligne','Indispensable dans les zones sans réseau.'],
+  ['🏨','Confirmer hébergements & 1ᵉʳ transfert','Adresse du 1er hôtel notée hors-ligne.'],
+  ['📄','Photocopies passeport + copies numériques','Dans le cloud + dans cette app (onglet SOS).']
+];
+
+const PRICES = [
+  ['Café / jus frais','15–30k'],['Repas en warung','25–50k'],['Repas au resto','100–200k'],
+  ['Grande bière Bintang','30–50k'],['Course Grab courte','20–40k'],['Scooter / jour','70–100k'],
+  ['Chauffeur / jour','600–800k'],['Entrée temple','30–75k'],['Massage 1h','100–200k'],
+  ['Excursion Nusa Penida','700k–1,2M']
+];
+
+/* ============================================================
+   STOCKAGE
+   ============================================================ */
+const DB = {
+  get:(k,d)=>{try{const v=localStorage.getItem('bali_'+k);return v?JSON.parse(v):d;}catch(e){return d;}},
+  set:(k,v)=>{try{localStorage.setItem('bali_'+k,JSON.stringify(v));}catch(e){}}
+};
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+const SCREENS=['home','plan','money','guide','sos'];
+function go(id){
+  SCREENS.forEach(s=>{
+    document.getElementById('s-'+s).classList.toggle('on',s===id);
+    document.getElementById('ni-'+s).classList.toggle('on',s===id);
+  });
+  document.querySelector('.content').scrollTop=0;
+  window.scrollTo(0,0);
+  if(id==='home') renderHome();
+  if(id==='money') renderBudget();
+}
+
+/* ============================================================
+   COMPTE À REBOURS / EN-TÊTE
+   ============================================================ */
+function tripStatus(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const s=new Date(TRIP.start+'T00:00:00'), e=new Date(TRIP.end+'T00:00:00');
+  const day=86400000;
+  const total=Math.round((e-s)/day)+1;
+  if(now<s){const d=Math.round((s-now)/day);return{phase:'before',label:d===0?'Départ demain !':'J-'+d,dayNum:0,total,pct:0};}
+  if(now>e){return{phase:'after',label:'Voyage terminé',dayNum:total,total,pct:100};}
+  const dn=Math.round((now-s)/day)+1;
+  return{phase:'during',label:'Jour '+dn+' / '+total,dayNum:dn,total,pct:Math.round((dn/total)*100)};
+}
+function renderHeader(){
+  const st=tripStatus();
+  document.getElementById('hcount').textContent=st.label;
+  const subs={before:'7 → 17 août 2026 · Selamat datang !',during:'Profite bien de chaque instant 🌴',after:'Sampai jumpa, Bali ! 🌺'};
+  document.getElementById('hsub').textContent=subs[st.phase];
+}
+
+/* ============================================================
+   ACCUEIL
+   ============================================================ */
+function renderHome(){
+  renderHeader();
+  const st=tripStatus();
+  const el=document.getElementById('s-home');
+  let heroBig,heroDates;
+  if(st.phase==='before'){heroBig=st.label==='Départ demain !'?'Demain, Bali !':st.label;heroDates='avant l\'envol vers Denpasar';}
+  else if(st.phase==='during'){heroBig='Jour '+st.dayNum;heroDates=(ITIN[st.dayNum-1]?ITIN[st.dayNum-1].t:'')+' · '+(ITIN[st.dayNum-1]?ITIN[st.dayNum-1].z:'');}
+  else{heroBig='Terminé';heroDates='J\'espère que c\'était magique 🌺';}
+
+  let html=`<div class="hero">
+    <div class="hero-lbl">${st.phase==='before'?'Compte à rebours':st.phase==='during'?'En ce moment':'Souvenirs'}</div>
+    <div class="hero-big">${heroBig}</div>
+    <div class="hero-dates">${heroDates}</div>
+    <div class="hero-prog"><i style="width:${st.pct}%"></i></div>
+  </div>`;
+
+  // Programme du jour (pendant le voyage)
+  if(st.phase==='during'&&ITIN[st.dayNum-1]){
+    const d=ITIN[st.dayNum-1];
+    html+=`<div class="card"><div class="card-t"><span class="ic">📍</span> Aujourd'hui — ${d.z}</div>
+      <ul class="day-acts" style="margin-top:2px">${d.acts.map(a=>`<li>${a}</li>`).join('')}</ul>
+      <div class="day-tip" style="margin-top:11px"><b>Astuce · </b>${d.tip}</div>
+      <button class="btn ghost" style="margin-top:12px" onclick="go('plan')">Voir tout l'itinéraire</button></div>`;
+  }
+
+  // Accès rapide
+  html+=`<div class="eyebrow">Accès rapide</div>
+  <div class="qgrid">
+    <button class="q" onclick="go('money')"><span class="qi">💱</span>Convertir</button>
+    <button class="q" onclick="go('plan')"><span class="qi">🗓️</span>Itinéraire</button>
+    <button class="q" onclick="openGuide('langue')"><span class="qi">🗣️</span>Parler</button>
+    <button class="q" onclick="go('sos')"><span class="qi">🆘</span>Urgences</button>
+    <button class="q" onclick="openGuide('cuisine')"><span class="qi">🍜</span>Manger</button>
+    <button class="q" onclick="openGuide('lieux')"><span class="qi">📍</span>Où aller</button>
+    <button class="q" onclick="openGuide('valise')"><span class="qi">🎒</span>Valise</button>
+    <button class="q" onclick="openGuide('carnet')"><span class="qi">📝</span>Carnet</button>
+  </div>`;
+
+  // Avant le départ (checklist) — surtout avant/début du voyage
+  if(st.phase!=='after'){
+    const done=DB.get('predep',{});
+    const total=PREDEP.length, ok=PREDEP.filter((_,i)=>done['pd'+i]).length;
+    html+=`<div class="eyebrow">À faire avant de partir · ${ok}/${total}</div>
+      <div class="card" style="padding:6px 15px">${PREDEP.map((p,i)=>`
+        <div class="chk ${done['pd'+i]?'done':''}" onclick="togglePredep(${i})">
+          <div class="chk-box"><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 5"/></svg></div>
+          <div class="chk-lbl">${p[0]} <b>${p[1]}</b><small>${p[2]}</small></div>
+        </div>`).join('')}</div>`;
+  }
+
+  // Fête indépendance rappel le 17
+  html+=`<div class="callout info"><b>🇮🇩 17 août — ton jour de départ</b> tombe le jour de la Fête de l'Indépendance indonésienne : défilés et drapeaux partout, mais routes ralenties. Pars à l'aéroport bien en avance.</div>`;
+
+  // Install tip
+  html+=`<div class="install-tip"><span>📲</span><div><b>Garde-moi à portée de main :</b> menu du navigateur → « Ajouter à l'écran d'accueil ». L'app s'ouvre alors en un tap et fonctionne hors-ligne.</div></div>`;
+
+  el.innerHTML=html;
+}
+function togglePredep(i){
+  const d=DB.get('predep',{}); d['pd'+i]=!d['pd'+i]; DB.set('predep',d); renderHome();
+}
+
+/* ============================================================
+   ITINÉRAIRE
+   ============================================================ */
+function renderItin(){
+  const st=tripStatus();
+  const notes=DB.get('itin_notes',{});
+  const wrap=document.getElementById('itinList');
+  const start=new Date(TRIP.start+'T00:00:00');
+  wrap.innerHTML=ITIN.map((d,i)=>{
+    const date=new Date(start.getTime()+i*86400000);
+    const dstr=date.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+    const isToday=st.phase==='during'&&st.dayNum===i+1;
+    return `<div class="day ${isToday?'today':''}">
+      <div class="day-hd">
+        <div class="day-num">J${i+1}<small>${date.getDate()}/${date.getMonth()+1}</small></div>
+        <div class="day-hd-main"><b>${d.t}</b><small>${dstr} · ${d.z}</small></div>
+      </div>
+      <ul class="day-acts">${d.acts.map(a=>`<li>${a}</li>`).join('')}</ul>
+      <div class="day-tip"><b>Astuce · </b>${d.tip}</div>
+      <textarea class="day-note" placeholder="✏️ Mes notes / réservations pour ce jour…" oninput="saveNote(${i},this.value)">${notes['d'+i]||''}</textarea>
+    </div>`;
+  }).join('');
+}
+function saveNote(i,v){const n=DB.get('itin_notes',{});n['d'+i]=v;DB.set('itin_notes',n);}
+
+/* ============================================================
+   CONVERTISSEUR
+   ============================================================ */
+function getRate(){return DB.get('rate',DEFAULT_RATE);}
+function initConv(){
+  document.getElementById('cRate').value=getRate();
+  convFrom('eur');
+}
+function convFrom(src){
+  const r=getRate();
+  const eur=document.getElementById('cEur'), idr=document.getElementById('cIdr');
+  if(src==='eur'){const v=parseFloat(eur.value)||0;idr.value=v?Math.round(v*r):'';}
+  else{const v=parseFloat(idr.value)||0;eur.value=v?+(v/r).toFixed(2):'';}
+}
+function setRate(){
+  const v=parseFloat(document.getElementById('cRate').value);
+  if(v>0){DB.set('rate',v);convFrom('eur');renderBudget();toast('Taux mis à jour');}
+}
+
+/* ============================================================
+   BUDGET
+   ============================================================ */
+const CATIC={'🏨 Logement':'🏨','🛵 Transport':'🛵','🍜 Nourriture':'🍜','🏄 Activités':'🏄','🛍️ Shopping':'🛍️','💠 Autre':'💠'};
+function addExp(){
+  const amt=parseFloat(document.getElementById('expAmt').value);
+  const cur=document.getElementById('expCur').value;
+  const lbl=document.getElementById('expLbl').value.trim();
+  const cat=document.getElementById('expCat').value;
+  if(!amt||amt<=0){toast('Entre un montant');return;}
+  const idr=cur==='eur'?Math.round(amt*getRate()):Math.round(amt);
+  const exps=DB.get('exps',[]);
+  exps.push({id:Date.now(),idr,lbl:lbl||cat.slice(2).trim(),cat,d:new Date().toISOString()});
+  DB.set('exps',exps);
+  document.getElementById('expAmt').value='';document.getElementById('expLbl').value='';
+  renderBudget();toast('Dépense ajoutée');
+}
+function delExp(id){
+  DB.set('exps',DB.get('exps',[]).filter(e=>e.id!==id));renderBudget();
+}
+function fmtIDR(n){return n.toLocaleString('fr-FR')+' Rp';}
+function renderBudget(){
+  const exps=DB.get('exps',[]);
+  const total=exps.reduce((s,e)=>s+e.idr,0);
+  const r=getRate();
+  document.getElementById('budIdr').textContent=fmtIDR(total);
+  document.getElementById('budEur').textContent='≈ '+(total/r).toFixed(0)+' €';
+  // par catégorie
+  const bycat={};
+  exps.forEach(e=>{bycat[e.cat]=(bycat[e.cat]||0)+e.idr;});
+  document.getElementById('budCats').innerHTML=Object.entries(bycat).sort((a,b)=>b[1]-a[1])
+    .map(([c,v])=>`<span class="bud-cat">${CATIC[c]||'💠'} <b>${Math.round(v/1000)}k</b></span>`).join('')||'<span class="muted">Aucune dépense encore</span>';
+  // liste
+  const list=document.getElementById('expList');
+  if(!exps.length){list.innerHTML='';return;}
+  list.innerHTML='<div class="card" style="padding:6px 15px">'+exps.slice().reverse().map(e=>{
+    const dt=new Date(e.d).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+    return `<div class="exp">
+      <span class="exp-ic">${CATIC[e.cat]||'💠'}</span>
+      <div class="exp-main"><b>${escapeHtml(e.lbl)}</b><small>${dt}</small></div>
+      <div class="exp-amt">${fmtIDR(e.idr)}<small>${(e.idr/r).toFixed(2)} €</small></div>
+      <button class="exp-del" onclick="delExp(${e.id})" aria-label="supprimer">✕</button>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+/* ============================================================
+   GUIDE (sous-sections)
+   ============================================================ */
+const GUIDE_TABS=[['langue','🗣️ Parler'],['culture','🛕 Culture'],['cuisine','🍜 Cuisine'],['lieux','📍 Lieux'],['transport','🛵 Transport'],['valise','🎒 Valise'],['carnet','📝 Carnet']];
+function renderGuidePills(){
+  document.getElementById('guidePills').innerHTML=GUIDE_TABS.map(([id,l],i)=>
+    `<button class="pill ${i===0?'on':''}" id="pill-${id}" onclick="showGuide('${id}')">${l}</button>`).join('');
+}
+function showGuide(id){
+  GUIDE_TABS.forEach(([g])=>{
+    document.getElementById('g-'+g).classList.toggle('on',g===id);
+    document.getElementById('pill-'+g).classList.toggle('on',g===id);
+  });
+  const p=document.getElementById('pill-'+id);
+  if(p) p.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+}
+function openGuide(id){go('guide');showGuide(id);}
+
+function buildGuide(){
+  // LANGUE
+  const cats=[...new Set(PHRASES.map(p=>p[0]))];
+  document.getElementById('g-langue').innerHTML=
+    `<div class="callout info">Prononce comme du français. Les <b>MAJUSCULES</b> indiquent la syllabe accentuée. Un sourire vaut tous les accents !</div>
+     <input class="fi" id="phSearch" placeholder="🔍 Chercher un mot…" oninput="filterPhrases(this.value)" style="margin-bottom:14px">
+     <div id="phList">`+
+    cats.map(c=>`<div class="eyebrow">${c}</div>`+
+      PHRASES.filter(p=>p[0]===c).map(p=>
+        `<div class="ph" data-s="${(p[1]+' '+p[2]).toLowerCase()}"><div class="ph-fr">${p[1]}</div><div class="ph-id">${p[2]}</div><div class="ph-pn">${p[3]}</div></div>`
+      ).join('')
+    ).join('')+`</div>`;
+
+  // CULTURE
+  document.getElementById('g-culture').innerHTML=
+    `<div class="eyebrow">À faire</div>`+
+    CULTURE.do.map(d=>`<div class="dodont do"><span class="dd-ic">${d[0]}</span><div><b>${d[1]}</b><small>${d[2]}</small></div></div>`).join('')+
+    `<div class="eyebrow">À éviter</div>`+
+    CULTURE.dont.map(d=>`<div class="dodont dont"><span class="dd-ic">${d[0]}</span><div><b>${d[1]}</b><small>${d[2]}</small></div></div>`).join('')+
+    `<div class="eyebrow">Fêtes & traditions</div><div class="card" style="padding:4px 15px">`+
+    CULTURE.fest.map(f=>`<div class="row"><span class="row-ic">${f[0]}</span><div class="row-main"><b>${f[1]}</b><small>${f[2]}</small></div></div>`).join('')+`</div>`;
+
+  // CUISINE
+  document.getElementById('g-cuisine').innerHTML=
+    `<div class="eyebrow">À goûter absolument</div><div class="card" style="padding:4px 15px">`+
+    CUISINE.plats.map(p=>`<div class="row"><span class="row-ic">${p[0]}</span><div class="row-main"><b>${p[1]}</b><small>${p[2]}</small></div></div>`).join('')+`</div>`+
+    `<div class="callout"><b>Warung</b> = petit resto local. Bon marché, authentique et souvent le plus savoureux. C'est là qu'il faut aller.</div>`+
+    `<div class="callout warnc"><b>Prévention « Bali belly »</b> → voir l'onglet <b>SOS</b> pour les réflexes anti-tourista.</div>`;
+
+  // LIEUX
+  document.getElementById('g-lieux').innerHTML=
+    `<div class="eyebrow">Les régions</div><div class="card" style="padding:4px 15px">`+
+    LIEUX.regions.map(r=>`<div class="row"><span class="row-ic">${r[0]}</span><div class="row-main"><b>${r[1]}</b><small>${r[2]}</small></div></div>`).join('')+`</div>`+
+    `<div class="eyebrow">Les incontournables</div><div class="card" style="padding:4px 15px">`+
+    LIEUX.spots.map(s=>`<div class="row"><span class="row-ic">${s[0]}</span><div class="row-main"><b>${s[1]}</b><small>${s[2]}</small></div></div>`).join('')+`</div>`;
+
+  // TRANSPORT
+  document.getElementById('g-transport').innerHTML=
+    `<div class="card" style="padding:4px 15px">`+
+    TRANSPORT.map(t=>`<div class="row"><span class="row-ic">${t[0]}</span><div class="row-main"><b>${t[1]}</b><small>${t[2]}</small></div></div>`).join('')+`</div>`;
+
+  // VALISE
+  const packed=DB.get('pack',{});
+  let phtml=`<div class="callout info">Août = saison sèche : chaud, ensoleillé, averses rares. Coche au fur et à mesure, c'est sauvegardé.</div>`;
+  let ci=0;
+  for(const[cat,items]of Object.entries(PACK)){
+    phtml+=`<div class="eyebrow">${cat}</div><div class="card" style="padding:6px 15px">`+
+      items.map(it=>{const k='pk'+ci++;return `<div class="chk ${packed[k]?'done':''}" onclick="togglePack('${k}')">
+        <div class="chk-box"><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 5"/></svg></div>
+        <div class="chk-lbl">${it[0]}${it[1]?`<small>${it[1]}</small>`:''}</div></div>`;}).join('')+`</div>`;
+  }
+  document.getElementById('g-valise').innerHTML=phtml;
+
+  // CARNET
+  renderCarnet();
+}
+function filterPhrases(q){
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('#phList .ph').forEach(el=>{
+    el.style.display=(!q||el.dataset.s.includes(q))?'':'none';
+  });
+  document.querySelectorAll('#phList .eyebrow').forEach(h=>{
+    let n=h.nextElementSibling,vis=false;
+    while(n&&n.classList.contains('ph')){if(n.style.display!=='none')vis=true;n=n.nextElementSibling;}
+    h.style.display=vis?'':'none';
+  });
+}
+function togglePack(k){const p=DB.get('pack',{});p[k]=!p[k];DB.set('pack',p);buildGuide();showGuide('valise');}
+
+/* CARNET (journal) */
+function renderCarnet(){
+  const notes=DB.get('journal',[]);
+  document.getElementById('g-carnet').innerHTML=
+    `<div class="card"><div class="card-t"><span class="ic">✍️</span> Nouveau souvenir</div>
+      <textarea class="fi" id="jText" placeholder="Ce que j'ai vu, mangé, ressenti aujourd'hui…"></textarea>
+      <button class="btn acc" onclick="addJournal()">Ajouter au carnet</button></div>`+
+    (notes.length?notes.slice().reverse().map(n=>{
+      const dt=new Date(n.d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+      return `<div class="card"><div class="muted" style="margin-bottom:6px">${dt}</div>
+        <div style="font-size:14px;white-space:pre-wrap">${escapeHtml(n.t)}</div>
+        <button class="btn ghost" style="margin-top:11px;padding:8px" onclick="delJournal(${n.id})">Supprimer</button></div>`;
+    }).join(''):`<div class="empty"><div class="ei">📖</div>Ton carnet est vide.<br>Note tes plus beaux moments !</div>`);
+}
+function addJournal(){
+  const t=document.getElementById('jText').value.trim();
+  if(!t){toast('Écris quelque chose 🙂');return;}
+  const j=DB.get('journal',[]);j.push({id:Date.now(),t,d:new Date().toISOString()});DB.set('journal',j);
+  renderCarnet();toast('Souvenir enregistré ✨');
+}
+function delJournal(id){
+  if(!confirm('Supprimer ce souvenir ?'))return;
+  DB.set('journal',DB.get('journal',[]).filter(n=>n.id!==id));renderCarnet();
+}
+
+/* ============================================================
+   ARGENT — repères & conseils (statique)
+   ============================================================ */
+function buildMoneyStatic(){
+  document.getElementById('priceRef').innerHTML=PRICES.map(p=>
+    `<div class="pk">${p[0]}</div><div class="pv">${p[1]}</div>`).join('');
+  document.getElementById('moneyTips').innerHTML=
+    `<div class="card" style="padding:4px 15px">`+
+    MONEYTIPS.map(t=>`<div class="row"><span class="row-ic">${t[0]}</span><div class="row-main"><b>${t[1]}</b><small>${t[2]}</small></div></div>`).join('')+`</div>`;
+}
+
+/* ============================================================
+   SOS
+   ============================================================ */
+function buildSos(){
+  document.getElementById('sosList').innerHTML=SOS.map(s=>{
+    const[cls,ic,name,desc,num]=s;
+    const tel=num?`href="tel:${num}"`:'';
+    const right=num?`<span class="sos-call">Appeler</span>`:`<span class="muted">sur place</span>`;
+    return `<a class="sos ${cls}" ${tel}>
+      <span class="sos-ic">${ic}</span>
+      <div class="sos-main"><b>${name}</b><small>${desc}</small></div>
+      ${num?`<span class="sos-num">${cls==='urgent'?num:''}</span>`:''}
+      ${right}
+    </a>`;
+  }).join('');
+  document.getElementById('healthTips').innerHTML=
+    `<div class="card" style="padding:4px 15px">`+
+    HEALTH.map(h=>`<div class="row"><span class="row-ic">${h[0]}</span><div class="row-main"><b>${h[1]}</b><small>${h[2]}</small></div></div>`).join('')+`</div>`+
+    `<div class="callout warnc" style="margin-top:11px"><b>Consulte un médecin</b> si fièvre, sang dans les selles ou diarrhée > 48 h. BIMC et Siloam sont anglophones.</div>`;
+  // charger mes infos
+  ['ins_phone','ins_policy','ins_blood','ins_allerg','ins_ice'].forEach(k=>{
+    const v=DB.get(k,'');if(v)document.getElementById(k).value=v;
+  });
+}
+function saveIce(){
+  ['ins_phone','ins_policy','ins_blood','ins_allerg','ins_ice'].forEach(k=>DB.set(k,document.getElementById(k).value));
+  toast('Infos enregistrées ✓');
+}
+
+/* ============================================================
+   THÈME
+   ============================================================ */
+function applyTheme(t){
+  if(t)document.documentElement.setAttribute('data-theme',t);
+  else document.documentElement.removeAttribute('data-theme');
+  const dark=t?t==='dark':window.matchMedia('(prefers-color-scheme:dark)').matches;
+  document.getElementById('themeBtn').textContent=dark?'☀':'◐';
+  document.querySelector('meta[name=theme-color]').setAttribute('content','#0E4D42');
+}
+function toggleTheme(){
+  const cur=DB.get('theme',null);
+  const sysDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const now=cur||(sysDark?'dark':'light');
+  const next=now==='dark'?'light':'dark';
+  DB.set('theme',next);applyTheme(next);
+}
+
+/* ============================================================
+   UTILS + INIT
+   ============================================================ */
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let toastTimer;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);}
+
+(function init(){
+  applyTheme(DB.get('theme',null));
+  renderHeader();
+  renderHome();
+  renderItin();
+  initConv();
+  buildMoneyStatic();
+  renderBudget();
+  renderGuidePills();
+  buildGuide();
+  buildSos();
+})();
+</script>
+</body>
+</html>
